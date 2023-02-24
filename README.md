@@ -1,7 +1,7 @@
-# APOSTLGen Parser #
+# MAGMACT-Gen Parser #
 
-First version of the [APOSTLGen](https://bitbucket.org/acmribeiro/apostl-gen/src/master/) parser. This takes as input an
-OpenAPI Specification extended with APOSTLGen and serializes it. 
+First version of the [MAGMACT-Gen](https://bitbucket.org/acmribeiro/apostl-gen/src/master/) parser. This takes as input an
+OpenAPI Specification extended with MAGMACT-Gen and serializes it. 
 
 ### 🔷 Generate Executable JAR ###
 To generate the executable `jar` file: 
