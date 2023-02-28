@@ -11,6 +11,7 @@ public class Operation {
     private List<URLParameter> queryParams, pathParams;
     private RequestBodySchema requestBody;
     private List<Response> responses;
+    private Endpoint endpoint;
 
     public Operation(Schema requestBody, List<APIURLParameter> parameters) {
         initRequestBody(requestBody);
@@ -23,6 +24,7 @@ public class Operation {
                 case "query" -> queryParams.add(new URLParameter(p.getIn(), p.getName(), p.isRequired(), p.getSchema()));
             }
 
+        endpoint = new Endpoint(url, queryParams, pathParams);
     }
 
     public String getOperationID() {
@@ -35,6 +37,10 @@ public class Operation {
 
     public String getVerb(){
         return verb;
+    }
+
+    public Endpoint getEndpoint() {
+        return endpoint;
     }
 
     public void setUrl(String url) {
