@@ -54,13 +54,12 @@ public class Parser {
             return property;
         };
 
+        // Registering custom deserializers
         gsonBuilder.registerTypeAdapter(RequestBodySchema.class, requestBodyDeserializer);
         gsonBuilder.registerTypeAdapter(URLProperty.class, urlPropertyDeserializer);
 
         Gson customGson = gsonBuilder.create();
-
         Specification spec = customGson.fromJson(new FileReader(fileLocation), Specification.class);
-
         spec.initDerivedFields();
 
         return spec;

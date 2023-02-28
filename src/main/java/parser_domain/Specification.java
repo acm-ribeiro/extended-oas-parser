@@ -9,6 +9,7 @@ public class Specification {
     private List<String> invariants;
     private Map<String, Map<String, Operation>> paths; // <path, <verb, operation>>
     private List<Schema> schemas;
+    private Map<String, Endpoint> endpoints;
 
     public Specification() {
     }
@@ -25,22 +26,37 @@ public class Specification {
     * Initializes auxiliary fields (e.g. operation verbs and urls)
     * */
     public void initDerivedFields() {
-        for(Entry<String, Map<String, Operation>> pathEntry: paths.entrySet()) {
-            Map<String, Operation> operationsByVerb = pathEntry.getValue();
-            String path = pathEntry.getKey();
+        endpoints = new HashMap<>();
 
-            for(Entry<String, Operation> operationEntry : operationsByVerb.entrySet()){
+        for(Entry<String, Map<String, Operation>> pathEntry: paths.entrySet()) {
+            Map<String, Operation> operations = pathEntry.getValue();
+            String uri = pathEntry.getKey();
+
+            for(Entry<String, Operation> operationEntry : operations.entrySet()){
                 String verb = operationEntry.getKey();
                 Operation op = operationEntry.getValue();
 
-                op.setUrl(path);
+                op.setUrl(uri);
                 op.setVerb(verb);
+
+                // Initialising the endpoints.
+                String opId = operationEntry.getValue().getOperationID();
+                List<URLParameter> params = new ArrayList<>();
+                params.addAll(operationEntry.getValue().getPathParams());
+                params.addAll(operationEntry.getValue().getQueryParams());
+
+                endpoints.put(opId, new Endpoint(uri, params));
             }
         }
     }
 
+
     public List<String> getInvariants() {
         return invariants;
+    }
+
+    public Map<String, Endpoint> getEndpoints() {
+        return endpoints;
     }
 
     public List<Operation> getDeletes() {
@@ -144,6 +160,13 @@ public class Specification {
         return null;
     }
 
+    public void printEndpoints() {
+        for(Entry<String, Endpoint> end_entry : endpoints.entrySet()) {
+            String op_id = end_entry.getKey();
+            Endpoint endpoint = end_entry.getValue();
+            System.out.println("\n[" + op_id  + "]\n" + endpoint);
+        }
+    }
 
     @Override
     public String toString() {
