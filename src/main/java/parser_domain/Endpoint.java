@@ -39,6 +39,10 @@ public class Endpoint {
         return paramValues;
     }
 
+    public void addParameterValue(String name, String value) {
+        paramValues.put(name, value);
+    }
+
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder("uri: " + uri);
