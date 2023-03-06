@@ -8,15 +8,19 @@ import java.util.Map.Entry;
 
 public class Endpoint {
 
+    public static final String PATH = "path";
+    public static final String QUERY = "query";
+
     private String uri;
     private Map<String, URLParameter> parameters;       // Parameters by name : <parameter_name, parameter>
     private LinkedHashMap<String, String> pathValues;   // Path parameters values : <path_name, value>
-    private Map<String, String> queryValues;   // Path parameters values : <query_name, value>
+    private Map<String, String> queryValues;            // Path parameters values : <query_name, value>
 
     public Endpoint(String uri, List<URLParameter> path, List<URLParameter> query) {
         this.uri = uri;
         parameters = new HashMap<>();
-
+        pathValues = new LinkedHashMap<>();
+        queryValues = new HashMap<>();
 
         // Initializing parameters
         for (URLParameter p : path)
@@ -29,7 +33,7 @@ public class Endpoint {
         String in;
         for(Entry<String, URLParameter> e : parameters.entrySet()) {
             in = e.getValue().getIn();
-            if (in.equalsIgnoreCase("path"))
+            if (in.equalsIgnoreCase(PATH))
                 pathValues.put(e.getKey(), "");
             else
                 queryValues.put(e.getKey(), "");
@@ -58,22 +62,34 @@ public class Endpoint {
         queryValues.put(name, value);
     }
 
+    /**
+     * Current string representation of the endpoint with all the replaced parameters
+     * @return uri with all parameter values
+     */
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder("uri: " + uri);
+        // removing first occurrence of '/' and splitting the uri by the remaining '/'
+        String[] parts = uri.replaceFirst("/", "").split("/");
+        StringBuilder str = new StringBuilder();
 
-        if(!parameters.isEmpty())
-            str.append("\nparams: {");
+        for(String s : parts) {
+            str.append("/");
+            if (s.contains("{")) {
+                // is path parameter
+                str.append(pathValues.get(s.replace("{", "").replace("}", "")));
+            } else {
+                // is resource name
+                str.append(s);
+            }
+        }
 
-        for (Entry<String, URLParameter> e : parameters.entrySet())
-            str.append(e.getKey()).append(", ");
-
-        if(!parameters.isEmpty()) {
-            str.deleteCharAt(str.length() - 2); // remove last comma
-            str.deleteCharAt(str.length() - 1); // remove last space
-            str.append("}");
+        // adding query parameter values
+        for (Entry<String, String> q : queryValues.entrySet()) {
+            str.append("?");
+            str.append(q.getKey()).append("=").append(q.getValue());
         }
 
         return str.toString();
     }
+
 }
