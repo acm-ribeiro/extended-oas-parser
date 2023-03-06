@@ -33,6 +33,10 @@ public class URLParameter {
         return name;
     }
 
+    public String getIn() {
+        return in;
+    }
+
     public URLProperty getSchema() {
         return schema;
     }

@@ -1,6 +1,7 @@
 package parser_domain;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,12 +9,14 @@ import java.util.Map.Entry;
 public class Endpoint {
 
     private String uri;
-    private Map<String, URLParameter> parameters;   // Parameters by name : <parameter_name, parameter>
-    private Map<String, String> paramValues;        // Replaced parameters : <parameter_name, value>
+    private Map<String, URLParameter> parameters;       // Parameters by name : <parameter_name, parameter>
+    private LinkedHashMap<String, String> pathValues;   // Path parameters values : <path_name, value>
+    private Map<String, String> queryValues;   // Path parameters values : <query_name, value>
 
     public Endpoint(String uri, List<URLParameter> path, List<URLParameter> query) {
         this.uri = uri;
         parameters = new HashMap<>();
+
 
         // Initializing parameters
         for (URLParameter p : path)
@@ -23,9 +26,14 @@ public class Endpoint {
             parameters.put(q.getName(), q);
 
         // Initializing parameter values as ""
-        for(Entry<String, URLParameter> e : parameters.entrySet())
-            paramValues.put(e.getKey(), "");
-
+        String in;
+        for(Entry<String, URLParameter> e : parameters.entrySet()) {
+            in = e.getValue().getIn();
+            if (in.equalsIgnoreCase("path"))
+                pathValues.put(e.getKey(), "");
+            else
+                queryValues.put(e.getKey(), "");
+        }
     }
 
     public String getUri() {
@@ -35,12 +43,19 @@ public class Endpoint {
     public Map<String, URLParameter> getParameters() {
         return parameters;
     }
-    public Map<String, String> getParameterValues() {
-        return paramValues;
+    public LinkedHashMap<String, String> getPathValues() {
+        return pathValues;
+    }
+    public Map<String, String> getQueryValues() {
+        return queryValues;
     }
 
-    public void addParameterValue(String name, String value) {
-        paramValues.put(name, value);
+    public void putPathValue(String name, String value) {
+        pathValues.put(name, value);
+    }
+
+    public void putQueryValue(String name, String value) {
+        queryValues.put(name, value);
     }
 
     @Override
