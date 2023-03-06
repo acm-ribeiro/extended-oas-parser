@@ -33,6 +33,7 @@ public class Specification {
                 Operation op = operationEntry.getValue();
                 op.setUrl(pathEntry.getKey());
                 op.setVerb(operationEntry.getKey());
+                op.initEndpoint();
             }
         }
     }

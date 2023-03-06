@@ -63,7 +63,8 @@ public class Endpoint {
     }
 
     /**
-     * Current string representation of the endpoint with all the replaced parameters
+     * Current string representation of the endpoint with all the replaced parameters.
+     * If the parameter does not have a value then the parameter name between '{}' is returned.
      * @return uri with all parameter values
      */
     @Override
@@ -71,12 +72,19 @@ public class Endpoint {
         // removing first occurrence of '/' and splitting the uri by the remaining '/'
         String[] parts = uri.replaceFirst("/", "").split("/");
         StringBuilder str = new StringBuilder();
+        String name, value, q_name, q_value;
 
         for(String s : parts) {
             str.append("/");
+
             if (s.contains("{")) {
                 // is path parameter
-                str.append(pathValues.get(s.replace("{", "").replace("}", "")));
+                name = s.replace("{", "").replace("}", "");
+                value = pathValues.get(name);
+                if (value.equals(""))
+                    str.append(s);
+                else
+                    str.append(value);
             } else {
                 // is resource name
                 str.append(s);
@@ -84,9 +92,22 @@ public class Endpoint {
         }
 
         // adding query parameter values
-        for (Entry<String, String> q : queryValues.entrySet()) {
+        if(!queryValues.isEmpty()) {
             str.append("?");
-            str.append(q.getKey()).append("=").append(q.getValue());
+
+            for (Entry<String, String> q : queryValues.entrySet()){
+                q_name = q.getKey();
+                q_value = q.getValue();
+                str.append(q_name).append("=");
+
+                if (q_value.contains(" "))
+                    q_value = q_value.replace(" ", "+");
+
+                str.append(q_value).append("&");
+            }
+
+            // Remove last '&'
+            str.deleteCharAt(str.length() - 1);
         }
 
         return str.toString();

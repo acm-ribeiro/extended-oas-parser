@@ -5,6 +5,8 @@ import parser_domain.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Parser {
 

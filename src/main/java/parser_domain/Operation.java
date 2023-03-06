@@ -12,17 +12,10 @@ public class Operation {
     private List<Response> responses;
     private Endpoint endpoint;
 
-    public Operation(Schema requestBody, List<APIURLParameter> parameters) {
-        initRequestBody(requestBody);
-        pathParams = new ArrayList<>();
-        queryParams = new ArrayList<>();
+    public Operation() {
+    }
 
-        for (APIURLParameter p : parameters)
-            switch (p.getIn().toLowerCase()) {
-                case "path" -> pathParams.add(new URLParameter(p.getIn(), p.getName(), p.isRequired(), p.getSchema()));
-                case "query" -> queryParams.add(new URLParameter(p.getIn(), p.getName(), p.isRequired(), p.getSchema()));
-            }
-
+    public void initEndpoint() {
         endpoint = new Endpoint(url, queryParams, pathParams);
     }
 
@@ -72,15 +65,6 @@ public class Operation {
 
     public List<Response> getResponses() {
         return responses;
-    }
-
-    private void initRequestBody(Schema requestBody) {
-        if(requestBody != null)
-            this.requestBody = requestBody.isRef() ?
-                    new APIRequestBodySchema(requestBody.getType(), requestBody.getName(), requestBody.getProperties()) :
-                    new ReferencedBodySchema(requestBody.getName());
-        else
-            this.requestBody = null;
     }
 
 }
