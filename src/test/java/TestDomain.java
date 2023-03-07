@@ -1,10 +1,10 @@
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import parser.Parser;
-import parser_domain.Endpoint;
-import parser_domain.Operation;
-import parser_domain.Specification;
-import parser_domain.URLParameter;
+import extended_parser_domain.Endpoint;
+import extended_parser_domain.Operation;
+import extended_parser_domain.Specification;
+import extended_parser_domain.URLParameter;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
