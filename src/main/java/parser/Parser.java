@@ -8,7 +8,7 @@ import java.io.FileReader;
 
 public class Parser {
 
-    public static Specification parse(String fileLocation) throws FileNotFoundException {
+    public static Specification parse(String fileLocation) {
         GsonBuilder gsonBuilder = new GsonBuilder();
 
         // Custom json deserializer for abstract class RequestBodySchema
@@ -59,10 +59,15 @@ public class Parser {
         gsonBuilder.registerTypeAdapter(URLProperty.class, urlPropertyDeserializer);
 
         Gson customGson = gsonBuilder.create();
-        Specification spec = customGson.fromJson(new FileReader(fileLocation), Specification.class);
-        spec.initDerivedFields();
+        try {
+            Specification spec = customGson.fromJson(new FileReader(fileLocation), Specification.class);
+            spec.initDerivedFields();
+            return spec;
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found. [" + fileLocation + "].");
+        }
 
-        return spec;
+        return null;
     }
 
 }

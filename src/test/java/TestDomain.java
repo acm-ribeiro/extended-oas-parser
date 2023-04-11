@@ -6,7 +6,6 @@ import extended_parser_domain.Operation;
 import extended_parser_domain.Specification;
 import extended_parser_domain.URLParameter;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,7 +112,7 @@ public class TestDomain {
     }
 
     @BeforeAll
-    static void initSpec() throws FileNotFoundException {
-        spec = Parser.parse("/Users/acm.ribeiro/Desktop/run-specs/apostl-specs/tournaments-apostl-spec-extended.json");
+    static void initSpec() {
+        spec = Parser.parse("/Users/acm.ribeiro/Desktop/run-specs/magmact/tournaments-magmact-extended.json");
     }
 }
