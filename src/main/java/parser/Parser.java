@@ -59,6 +59,7 @@ public class Parser {
         gsonBuilder.registerTypeAdapter(URLProperty.class, urlPropertyDeserializer);
 
         Gson customGson = gsonBuilder.create();
+
         try {
             Specification spec = customGson.fromJson(new FileReader(fileLocation), Specification.class);
             spec.initDerivedFields();
