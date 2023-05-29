@@ -35,7 +35,7 @@ public class Endpoint {
             in = e.getValue().getIn();
             if (in.equalsIgnoreCase(PATH))
                 pathValues.put(e.getKey(), "");
-            else
+            else if (in.equalsIgnoreCase(QUERY))
                 queryValues.put(e.getKey(), "");
         }
     }
@@ -60,6 +60,28 @@ public class Endpoint {
 
     public void putQueryValue(String name, String value) {
         queryValues.put(name, value);
+    }
+
+    /**
+     * Resets the endpoint to its default values.
+     */
+    public void reset() {
+        pathValues.replaceAll((k, v) -> "");
+        queryValues.replaceAll((k, v) -> "");
+    }
+
+    public boolean noValues() {
+        for (String p : pathValues.values()){
+            if (!p.equals(""))
+                return false;
+        }
+
+        for (String q : queryValues.values()){
+            if (!q.equals(""))
+                return false;
+        }
+
+        return true;
     }
 
     /**
