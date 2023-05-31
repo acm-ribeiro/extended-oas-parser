@@ -8,7 +8,6 @@ public class extended_spec_parser {
     public static void main(String[] args) throws FileNotFoundException {
         Specification spec = Parser.parse(args[0]);
         spec.initDerivedFields();
-
         System.out.println(spec);
     }
 }

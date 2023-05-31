@@ -45,9 +45,8 @@ public class Parser {
                         String format = obj.has("format")? obj.get("format").getAsString() : "";
                         property = new URLIntegerProperty(name, type, min, max, format);
                     }
-                    case "array" -> {
-                        property = new URLArrayProperty(name, type, obj.get("itemsType").getAsString());
-                    }
+                    case "array" -> property = new URLArrayProperty(name, type, obj.get("itemsType").getAsString());
+
                 }
             }
 
