@@ -70,19 +70,24 @@ public class Endpoint {
         queryValues.replaceAll((k, v) -> "");
     }
 
+    /**
+     * Finds if there are "empty" parameters.
+     * @return true if there is at least one parameter that has no value associated; false otherwise
+     */
     public boolean noValues() {
         for (String p : pathValues.values()){
-            if (!p.equals(""))
-                return false;
+            if (p.equals(""))
+                return true;
         }
 
         for (String q : queryValues.values()){
-            if (!q.equals(""))
-                return false;
+            if (q.equals(""))
+                return true;
         }
 
-        return true;
+        return false;
     }
+
 
     /**
      * Current string representation of the endpoint with all the replaced parameters.
