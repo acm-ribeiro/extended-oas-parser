@@ -62,6 +62,7 @@ public class Parser {
         try {
             Specification spec = customGson.fromJson(new FileReader(fileLocation), Specification.class);
             spec.initDerivedFields();
+            spec.parseFormulas();
             return spec;
         } catch (FileNotFoundException e) {
             System.err.println("File not found. [" + fileLocation + "].");

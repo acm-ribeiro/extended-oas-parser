@@ -1,5 +1,8 @@
 package extended_parser_domain;
 
+import magmact_domain.Formula;
+import magmact_parser.VisitorOrientedParser;
+
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -36,6 +39,27 @@ public class Specification {
                 op.initEndpoint();
             }
         }
+    }
+
+    /**
+     * Parses the pre and postconditions into Formula objects.
+     */
+    public void parseFormulas() {
+        List<String> precond, poscond;
+        VisitorOrientedParser magmact_parser = new VisitorOrientedParser();
+        Formula f;
+
+        for(Map<String, Operation> e: paths.values())
+            for (Operation op : e.values()) {
+                precond = op.getPre();
+                poscond = op.getPos();
+
+                for (String pre: precond)
+                    op.addRequires(magmact_parser.parse(pre));
+
+                for (String pos: poscond)
+                    op.addEnsures(magmact_parser.parse(pos));
+            }
     }
 
 

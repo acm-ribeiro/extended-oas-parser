@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>magmact-parser</artifactId>
+    <artifactId>extended-spec-parser</artifactId>
     <version>1.0</version>
 
     <build>
@@ -33,7 +33,21 @@
         <maven.compiler.target>18</maven.compiler.target>
     </properties>
 
+    <!-- Add dependencies from github repositories -->
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <dependency>
+            <groupId>com.github.acm-ribeiro</groupId>
+            <artifactId>magmact-parser</artifactId>
+            <version>b30ec37</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
         <dependency>
             <groupId>org.antlr</groupId>

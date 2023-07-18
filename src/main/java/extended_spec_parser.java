@@ -7,6 +7,7 @@ public class extended_spec_parser {
         Specification spec = Parser.parse(args[0]);
         assert spec != null;
         spec.initDerivedFields();
+        spec.parseFormulas();
         System.out.println(spec);
     }
 }
