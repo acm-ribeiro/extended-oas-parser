@@ -9,7 +9,8 @@ import java.util.Map.Entry;
 public class Specification {
 
     private List<String> servers; // server urls
-    private List<String> invariants;
+    private List<String> invs;
+    private List<Formula> invariants;
     private Map<String, Map<String, Operation>> paths; // <path, <verb, operation>>
     private List<Schema> schemas;
 
@@ -17,8 +18,12 @@ public class Specification {
     public Specification() {
     }
 
-    public void addInvariant(String inv) {
-        invariants.add(inv);
+    public void addInv(String inv) {
+        invs.add(inv);
+    }
+
+    public void addInvariant(Formula invariant) {
+        invariants.add(invariant);
     }
 
     public List<String> getServers() {
@@ -42,13 +47,17 @@ public class Specification {
     }
 
     /**
-     * Parses the pre and postconditions into Formula objects.
+     * Parses the invariants, pre and postconditions into Formula objects.
      */
     public void parseFormulas() {
         List<String> precond, poscond;
         VisitorOrientedParser magmact_parser = new VisitorOrientedParser();
-        Formula f;
 
+        // Parsing invariants
+        for(String inv: invs)
+            invariants.add(magmact_parser.parse(inv));
+
+        // Parsing pre and postconditions
         for(Map<String, Operation> e: paths.values())
             for (Operation op : e.values()) {
                 precond = op.getPre();
@@ -63,9 +72,10 @@ public class Specification {
     }
 
 
-    public List<String> getInvariants() {
+    public List<Formula> getInvariants() {
         return invariants;
     }
+
 
     public List<Operation> getDeletes() {
         List<Operation> deletes = new ArrayList<>();
@@ -178,8 +188,9 @@ public class Specification {
         print.append("invariants: \n");
         if(invariants.isEmpty())
             print.append("   empty\n");
-        for(String invariant: invariants)
-            print.append("   ").append(invariant).append("\n");
+
+        for(Formula invariant: invariants)
+            print.append("   ").append(invariant.toString()).append("\n");
 
         print.append("paths: \n");
         for(Entry<String, Map<String, Operation>> path: paths.entrySet()){
