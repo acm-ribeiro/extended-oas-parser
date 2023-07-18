@@ -65,7 +65,7 @@ public class Parser {
             spec.parseFormulas();
             return spec;
         } catch (FileNotFoundException e) {
-            System.err.println("File not found. [" + fileLocation + "].");
+            System.err.println("No file at " + fileLocation);
         }
 
         return null;

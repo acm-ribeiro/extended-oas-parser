@@ -2,13 +2,14 @@ package extended_parser_domain;
 
 import magmact_domain.Formula;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Operation {
 
     private String operationID, verb, url;
-    private List<String> pre, pos;
-    private List<Formula> requires, ensures;
+    private List<String> requires, ensures;
+    private List<Formula> pre, pos;
     private List<URLParameter> queryParams, pathParams;
     private RequestBodySchema requestBody;
     private List<Response> responses;
@@ -57,28 +58,36 @@ public class Operation {
         return requestBody;
     }
 
-    public List<String> getPre() {
-        return pre;
-    }
-
-    public List<String> getPos() {
-        return pos;
-    }
-
-    public List<Formula> getRequires() {
+    public List<String> getRequires() {
         return requires;
     }
 
-    public List<Formula> getEnsures() {
+    public List<String> getEnsures() {
         return ensures;
     }
 
-    public void addRequires(Formula f) {
-        requires.add(f);
+    public List<Formula> getPre() {
+        return pre;
     }
 
-    public void addEnsures(Formula f) {
-        ensures.add(f);
+    public List<Formula> getPos() {
+        return pos;
+    }
+
+    public void addPre(Formula f) {
+        pre.add(f);
+    }
+
+    public void addPos(Formula f) {
+        pos.add(f);
+    }
+
+    /**
+     * Initialises the contract's data structures (pre and pos)
+     */
+    public void initContracts() {
+        pre = new ArrayList<>();
+        pos = new ArrayList<>();
     }
 
 

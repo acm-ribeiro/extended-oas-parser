@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 public class Specification {
 
     private List<String> servers; // server urls
-    private List<String> invs;
-    private List<Formula> invariants;
+    private List<String> invariants;
+    private List<Formula> invs;
     private Map<String, Map<String, Operation>> paths; // <path, <verb, operation>>
     private List<Schema> schemas;
 
@@ -18,12 +18,12 @@ public class Specification {
     public Specification() {
     }
 
-    public void addInv(String inv) {
-        invs.add(inv);
+    public void addInvariant(String invariant) {
+        invariants.add(invariant);
     }
 
-    public void addInvariant(Formula invariant) {
-        invariants.add(invariant);
+    public void addInv(Formula inv) {
+        invs.add(inv);
     }
 
     public List<String> getServers() {
@@ -50,30 +50,33 @@ public class Specification {
      * Parses the invariants, pre and postconditions into Formula objects.
      */
     public void parseFormulas() {
-        List<String> precond, poscond;
+        List<String> requires, ensures;
         VisitorOrientedParser magmact_parser = new VisitorOrientedParser();
 
+        invs = new ArrayList<>();
+
         // Parsing invariants
-        for(String inv: invs)
-            invariants.add(magmact_parser.parse(inv));
+        for(String invariant: invariants)
+            invs.add(magmact_parser.parse(invariant));
 
         // Parsing pre and postconditions
         for(Map<String, Operation> e: paths.values())
             for (Operation op : e.values()) {
-                precond = op.getPre();
-                poscond = op.getPos();
+                op.initContracts();
+                requires = op.getRequires();
+                ensures = op.getRequires();
 
-                for (String pre: precond)
-                    op.addRequires(magmact_parser.parse(pre));
+                for (String req: requires)
+                    op.addPre(magmact_parser.parse(req));
 
-                for (String pos: poscond)
-                    op.addEnsures(magmact_parser.parse(pos));
+                for (String ens: ensures)
+                    op.addPos(magmact_parser.parse(ens));
             }
     }
 
 
-    public List<Formula> getInvariants() {
-        return invariants;
+    public List<Formula> getInvs() {
+        return invs;
     }
 
 
@@ -189,8 +192,8 @@ public class Specification {
         if(invariants.isEmpty())
             print.append("   empty\n");
 
-        for(Formula invariant: invariants)
-            print.append("   ").append(invariant.toString()).append("\n");
+        for(Formula inv: invs)
+            print.append("   ").append(inv.toString()).append("\n");
 
         print.append("paths: \n");
         for(Entry<String, Map<String, Operation>> path: paths.entrySet()){
