@@ -64,13 +64,17 @@ public class Specification {
             for (Operation op : e.values()) {
                 op.initContracts();
                 requires = op.getRequires();
-                ensures = op.getRequires();
+                ensures = op.getEnsures();
 
                 for (String req: requires)
                     op.addPre(magmact_parser.parse(req));
 
                 for (String ens: ensures)
                     op.addPos(magmact_parser.parse(ens));
+
+                assert(requires.size() == op.getPre().size());
+                assert(ensures.size() == op.getPos().size());
+
             }
     }
 
