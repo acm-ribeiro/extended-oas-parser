@@ -72,9 +72,9 @@ public class Specification {
                 for (String ens: ensures)
                     op.addPos(magmact_parser.parse(ens));
 
+                // this should always be true
                 assert(requires.size() == op.getPre().size());
                 assert(ensures.size() == op.getPos().size());
-
             }
     }
 
