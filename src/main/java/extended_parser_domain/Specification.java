@@ -12,10 +12,18 @@ public class Specification {
     private List<String> invariants;
     private List<Formula> invs;
     private Map<String, Map<String, Operation>> paths; // <path, <verb, operation>>
+    private Map<String, Operation> operationsById;     // <operationId, operation>
+
     private List<Schema> schemas;
 
 
     public Specification() {
+        // initialising operations by id
+        Map<String, Operation> operationsById = new HashMap<>();
+
+        for(Entry<String, Map<String, Operation>> pathEntry: paths.entrySet())
+            for(Entry<String, Operation> operationEntry : pathEntry.getValue().entrySet())
+                operationsById.put(operationEntry.getValue().getOperationID(), operationEntry.getValue());
     }
 
     public void addInvariant(String invariant) {
@@ -78,12 +86,30 @@ public class Specification {
             }
     }
 
+    /**
+     * Finds an operation by its id.
+     *
+     * @param id  operation id
+     * @return operation or null, when it doesn't exist.
+     */
+    public Operation findOperation (String id) {
+        return operationsById.get(id);
+    }
 
+    /**
+     * Returns the specifications' invariants.
+     *
+     * @return invariants.
+     */
     public List<Formula> getInvs() {
         return invs;
     }
 
-
+    /**
+     * Returns the specifications' DELETE operations.
+     *
+     * @return DELETE operations.
+     */
     public List<Operation> getDeletes() {
         List<Operation> deletes = new ArrayList<>();
 
@@ -95,16 +121,20 @@ public class Specification {
         return deletes;
     }
 
+    /**
+     * Returns the specification's operations by their ids.
+     *
+     * @return operations by id.
+     */
     public Map<String, Operation> getOperations() {
-        Map<String, Operation> operationsById = new HashMap<>();
-
-        for(Entry<String, Map<String, Operation>> pathEntry: paths.entrySet())
-            for(Entry<String, Operation> operationEntry : pathEntry.getValue().entrySet())
-                operationsById.put(operationEntry.getValue().getOperationID(), operationEntry.getValue());
-
         return operationsById;
     }
 
+    /**
+     * Returns the specifications' operations by path.
+     *
+     * @return operaitons by path.
+     */
     public Map<String, Map<String, Operation>> getPaths() {
         return paths;
     }
