@@ -139,14 +139,6 @@ public class QuantifiedFormula implements Serializable {
 			return variables.hasPrevious() || quantifiedFormula.hasPrevious();
 	}
 
-	/**
-	 * Resets a formula to its initial state
-	 */
-	public void reset() {
-
-	}
-
-
 	@Override
 	public String toString() {
 		String str = expression != null? " :- " + expression.toString() : " : " + quantifiedFormula.toString();

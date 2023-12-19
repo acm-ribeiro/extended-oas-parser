@@ -5,8 +5,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.io.Serializable;
 
-public class Endpoint {
+
+public class Endpoint implements Serializable {
 
     public static final String PATH = "path";
     public static final String QUERY = "query";
