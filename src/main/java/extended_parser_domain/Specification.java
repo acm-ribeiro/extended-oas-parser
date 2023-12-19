@@ -12,18 +12,10 @@ public class Specification {
     private List<String> invariants;
     private List<Formula> invs;
     private Map<String, Map<String, Operation>> paths; // <path, <verb, operation>>
-    private Map<String, Operation> operationsById;     // <operationId, operation>
-
     private List<Schema> schemas;
 
 
     public Specification() {
-        // initialising operations by id
-        Map<String, Operation> operationsById = new HashMap<>();
-
-        for(Entry<String, Map<String, Operation>> pathEntry: paths.entrySet())
-            for(Entry<String, Operation> operationEntry : pathEntry.getValue().entrySet())
-                operationsById.put(operationEntry.getValue().getOperationID(), operationEntry.getValue());
     }
 
     public void addInvariant(String invariant) {
@@ -93,6 +85,7 @@ public class Specification {
      * @return operation or null, when it doesn't exist.
      */
     public Operation findOperation (String id) {
+        Map<String, Operation> operationsById = getOperations();
         return operationsById.get(id);
     }
 
@@ -127,6 +120,13 @@ public class Specification {
      * @return operations by id.
      */
     public Map<String, Operation> getOperations() {
+        // initialising operations by id
+        Map<String, Operation> operationsById = new HashMap<>();
+
+        for(Entry<String, Map<String, Operation>> pathEntry: paths.entrySet())
+            for(Entry<String, Operation> operationEntry : pathEntry.getValue().entrySet())
+                operationsById.put(operationEntry.getValue().getOperationID(), operationEntry.getValue());
+
         return operationsById;
     }
 

@@ -28,11 +28,6 @@
         </plugins>
     </build>
 
-    <properties>
-        <maven.compiler.source>18</maven.compiler.source>
-        <maven.compiler.target>18</maven.compiler.target>
-    </properties>
-
     <!-- Add dependencies from github repositories -->
     <repositories>
         <repository>
@@ -40,6 +35,11 @@
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
+
+    <properties>
+        <maven.compiler.source>18</maven.compiler.source>
+        <maven.compiler.target>18</maven.compiler.target>
+    </properties>
 
     <dependencies>
         <dependency>
