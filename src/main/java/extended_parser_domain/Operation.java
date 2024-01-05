@@ -34,6 +34,26 @@ public class Operation {
         return verb;
     }
 
+    public boolean isPUT() {
+        return verb.equalsIgnoreCase("PUT");
+    }
+
+    public boolean isPOST() {
+        return verb.equalsIgnoreCase("POST");
+    }
+
+    public boolean isGET() {
+        return verb.equalsIgnoreCase("GET");
+    }
+    
+    public boolean isDELETE() {
+        return verb.equalsIgnoreCase("DELETE");
+    }
+
+    public boolean isPATCH() {
+        return verb.equalsIgnoreCase("PATCH");
+    }
+
     public Endpoint getEndpoint() {
         return endpoint;
     }
@@ -89,7 +109,7 @@ public class Operation {
      * @return true if the operation is a get all; false otherwise.
      */
     public boolean isGetAll() {
-        return verb.equalsIgnoreCase("GET") && endpoint.noParameters();
+        return isGET() && endpoint.noParameters();
     }
 
     /**
