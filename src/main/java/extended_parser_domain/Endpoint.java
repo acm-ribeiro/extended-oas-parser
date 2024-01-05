@@ -1,9 +1,6 @@
 package extended_parser_domain;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.io.Serializable;
 
@@ -44,6 +41,10 @@ public class Endpoint implements Serializable {
 
     public String getUri() {
         return uri;
+    }
+
+    public boolean noParameters() {
+        return parameters.isEmpty();
     }
 
     public Map<String, URLParameter> getParameters() {
@@ -141,5 +142,4 @@ public class Endpoint implements Serializable {
 
         return str.toString();
     }
-
 }

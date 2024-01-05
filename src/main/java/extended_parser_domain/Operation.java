@@ -26,11 +26,11 @@ public class Operation {
         return operationID;
     }
 
-    public void setVerb(String verb){
+    public void setVerb(String verb) {
         this.verb = verb;
     }
 
-    public String getVerb(){
+    public String getVerb() {
         return verb;
     }
 
@@ -80,6 +80,16 @@ public class Operation {
 
     public void addPos(Formula f) {
         pos.add(f);
+    }
+
+    /**
+     * Checks whether the operation is a get all.
+     * E.g. GET /resources
+     *
+     * @return true if the operation is a get all; false otherwise.
+     */
+    public boolean isGetAll() {
+        return verb.equalsIgnoreCase("GET") && endpoint.noParameters();
     }
 
     /**
