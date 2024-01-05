@@ -100,7 +100,6 @@ public class Operation {
         pos = new ArrayList<>();
     }
 
-
     public List<Response> getResponses() {
         return responses;
     }

@@ -43,6 +43,12 @@ public class Endpoint implements Serializable {
         return uri;
     }
 
+    /**
+     * Checks whether this endpoint has parameters. If the parameters are empty, it is probably an
+     * endpoint for a GET all operation.
+     *
+     * @return true if the endpoint has no parameters; false otherwise.
+     */
     public boolean noParameters() {
         return parameters.isEmpty();
     }
