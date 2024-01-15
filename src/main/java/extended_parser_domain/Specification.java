@@ -41,6 +41,9 @@ public class Specification {
         Operation op;
         String verb;
 
+        operationsById = new HashMap<>();
+        deletes = new ArrayList<>();
+
         for (Entry<String, Map<String, Operation>> pathEntry : paths.entrySet()) {
             operations = pathEntry.getValue();
 
@@ -53,17 +56,15 @@ public class Specification {
                 op.initEndpoint();
 
                 // initialising operations by id
-                operationsById = new HashMap<>();
                 operationsById.put(op.getOperationID(), op);
 
                 // initialising delete operation list
-                deletes = new ArrayList<>();
                 if (verb.equalsIgnoreCase("DELETE"))
                     deletes.add(op);
             }
         }
 
-        // initialising schemas by name 
+        // initialising schemas by name
         schemasByName = new HashMap<>();
         for(Schema s : schemas)
             schemasByName.put(s.getName(), s);
@@ -192,24 +193,6 @@ public class Specification {
     public Map<String, Schema> getSchemas() {
         return schemasByName;
     }
-
-    // Finds the schema with the given type.
-//    public Schema getSchemaByType(String type) throws NoSuchElementException {
-//        // TODO REFACTOR
-//        Schema schema = null;
-//        System.out.println(type);
-//        for (Entry<String, Schema> e : schemasByName.entrySet()) {
-//            if (e.getValue().getType().equalsIgnoreCase(type.toLowerCase())) {
-//                schema = e.getValue();
-//                break;
-//            }
-//        }
-//
-//        if (schema != null)
-//            return schema;
-//        else
-//            throw new NoSuchElementException("\nCould not find the schema with type + [" + type + "] not found.\n");
-//    }
 
     public Schema getSchemaByName(String name) throws NoSuchElementException {
         if (schemasByName.containsKey(name))
