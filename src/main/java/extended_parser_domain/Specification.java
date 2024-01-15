@@ -8,11 +8,14 @@ import java.util.Map.Entry;
 
 public class Specification {
 
-    private List<String> servers; // server urls
+    private List<String> servers;                       // server urls
     private List<String> invariants;
     private List<Formula> invs;
     private Map<String, Map<String, Operation>> paths; // <path, <verb, operation>>
-    private List<Schema> schemas;
+    private List<Schema> schemas;                      // resource schemas
+    private Map<String, Schema> schemasByName;               // resource schemas
+    Map<String, Operation> operationsById;             // operations by id
+    List<Operation> deletes;                           // all specification delete operations
 
 
     public Specification() {
@@ -31,19 +34,40 @@ public class Specification {
     }
 
     /*
-    * Initializes auxiliary fields (e.g. operation verbs and urls)
-    * */
+     * Initializes auxiliary fields (e.g. operation verbs and urls)
+     * */
     public void initDerivedFields() {
-        for(Entry<String, Map<String, Operation>> pathEntry: paths.entrySet()) {
-            Map<String, Operation> operations = pathEntry.getValue();
+        Map<String, Operation> operations;
+        Operation op;
+        String verb;
 
-            for(Entry<String, Operation> operationEntry : operations.entrySet()){
-                Operation op = operationEntry.getValue();
+        for (Entry<String, Map<String, Operation>> pathEntry : paths.entrySet()) {
+            operations = pathEntry.getValue();
+
+            for (Entry<String, Operation> operationEntry : operations.entrySet()) {
+                op = operationEntry.getValue();
+                verb = operationEntry.getKey();
+
                 op.setUrl(pathEntry.getKey());
-                op.setVerb(operationEntry.getKey());
+                op.setVerb(verb);
                 op.initEndpoint();
+
+                // initialising operations by id
+                operationsById = new HashMap<>();
+                operationsById.put(op.getOperationID(), op);
+
+                // initialising delete operation list
+                deletes = new ArrayList<>();
+                if (verb.equalsIgnoreCase("DELETE"))
+                    deletes.add(op);
             }
         }
+
+        // initialising schemas by name 
+        schemasByName = new HashMap<>();
+        for(Schema s : schemas)
+            schemasByName.put(s.getName(), s);
+
     }
 
     /**
@@ -56,36 +80,44 @@ public class Specification {
         invs = new ArrayList<>();
 
         // Parsing invariants
-        for(String invariant: invariants)
+        for (String invariant : invariants)
             invs.add(magmact_parser.parse(invariant));
 
         // Parsing pre and postconditions
-        for(Map<String, Operation> e: paths.values())
+        for (Map<String, Operation> e : paths.values())
             for (Operation op : e.values()) {
                 op.initContracts();
                 requires = op.getRequires();
                 ensures = op.getEnsures();
 
-                for (String req: requires)
+                for (String req : requires)
                     op.addPre(magmact_parser.parse(req));
 
-                for (String ens: ensures)
+                for (String ens : ensures)
                     op.addPos(magmact_parser.parse(ens));
 
                 // this should always be true
-                assert(requires.size() == op.getPre().size());
-                assert(ensures.size() == op.getPos().size());
+                assert (requires.size() == op.getPre().size());
+                assert (ensures.size() == op.getPos().size());
             }
+    }
+
+    /**
+     * Resets the give operation's contract.
+     *
+     * @param operationId operation id.
+     */
+    public void resetOperationContract(String operationId) {
+        operationsById.get(operationId).resetContract();
     }
 
     /**
      * Finds an operation by its id.
      *
-     * @param id  operation id
+     * @param id operation id
      * @return operation or null, when it doesn't exist.
      */
-    public Operation findOperation (String id) {
-        Map<String, Operation> operationsById = getOperations();
+    public Operation findOperation(String id) {
         return operationsById.get(id);
     }
 
@@ -104,13 +136,6 @@ public class Specification {
      * @return DELETE operations.
      */
     public List<Operation> getDeletes() {
-        List<Operation> deletes = new ArrayList<>();
-
-        for(Entry<String, Map<String, Operation>> pathEntry: paths.entrySet())
-            for(Entry<String, Operation> operationEntry : pathEntry.getValue().entrySet())
-                if(operationEntry.getKey().equalsIgnoreCase("DELETE"))
-                    deletes.add(operationEntry.getValue());
-
         return deletes;
     }
 
@@ -120,20 +145,14 @@ public class Specification {
      * @return operations by id.
      */
     public Map<String, Operation> getOperations() {
-        // initialising operations by id
-        Map<String, Operation> operationsById = new HashMap<>();
-
-        for(Entry<String, Map<String, Operation>> pathEntry: paths.entrySet())
-            for(Entry<String, Operation> operationEntry : pathEntry.getValue().entrySet())
-                operationsById.put(operationEntry.getValue().getOperationID(), operationEntry.getValue());
-
         return operationsById;
     }
 
     /**
      * Returns the specifications' operations by path.
+     * Each path entry has a map organised by verb.
      *
-     * @return operaitons by path.
+     * @return operations by path.
      */
     public Map<String, Map<String, Operation>> getPaths() {
         return paths;
@@ -141,9 +160,9 @@ public class Specification {
 
     public String getParameterRegex(Operation op, String p) {
         URLParameter parameter = findOperationParameter(op, p);
-        URLProperty parameterSchema = parameter != null? parameter.getSchema() : null;
+        URLProperty parameterSchema = parameter != null ? parameter.getSchema() : null;
 
-        return parameterSchema instanceof URLStringProperty? ((URLStringProperty) parameterSchema).getPattern(): "";
+        return parameterSchema instanceof URLStringProperty ? ((URLStringProperty) parameterSchema).getPattern() : "";
     }
 
     private URLParameter findOperationParameter(Operation op, String name) {
@@ -158,87 +177,71 @@ public class Specification {
 
     public String getParameterType(Operation op, String p) {
         URLParameter parameter = findOperationParameter(op, p);
-        URLProperty parameterSchema = parameter != null? parameter.getSchema() : null;
+        URLProperty parameterSchema = parameter != null ? parameter.getSchema() : null;
 
-        return parameterSchema != null? parameterSchema.getType() : null;
+        return parameterSchema != null ? parameterSchema.getType() : null;
     }
 
     public int getParameterMinimum(Operation op, String p) {
         URLParameter parameter = findOperationParameter(op, p);
-        URLProperty parameterSchema = parameter != null? parameter.getSchema() : null;
+        URLProperty parameterSchema = parameter != null ? parameter.getSchema() : null;
 
-        return parameterSchema instanceof URLIntegerProperty? ((URLIntegerProperty) parameterSchema).getMin(): -99;
+        return parameterSchema instanceof URLIntegerProperty ? ((URLIntegerProperty) parameterSchema).getMin() : -99;
     }
 
-    public List<Schema> getSchemas(){
-        return schemas;
+    public Map<String, Schema> getSchemas() {
+        return schemasByName;
     }
 
     // Finds the schema with the given type.
-    public Schema getSchemaByType(String type) throws NoSuchElementException {
-        Schema schema = null;
-        System.out.println(type);
-        for (Schema s : schemas) {
-            if (s.getType().equalsIgnoreCase(type.toLowerCase())) {
-                schema = s;
-                break;
-            }
-        }
-
-        if (schema != null)
-            return schema;
-        else
-            throw new NoSuchElementException("\nCouldn't find the required schema.\n");
-    }
+//    public Schema getSchemaByType(String type) throws NoSuchElementException {
+//        // TODO REFACTOR
+//        Schema schema = null;
+//        System.out.println(type);
+//        for (Entry<String, Schema> e : schemasByName.entrySet()) {
+//            if (e.getValue().getType().equalsIgnoreCase(type.toLowerCase())) {
+//                schema = e.getValue();
+//                break;
+//            }
+//        }
+//
+//        if (schema != null)
+//            return schema;
+//        else
+//            throw new NoSuchElementException("\nCould not find the schema with type + [" + type + "] not found.\n");
+//    }
 
     public Schema getSchemaByName(String name) throws NoSuchElementException {
-        Schema schema = null;
-
-        for (Schema s : schemas) {
-            if (s.getName().equalsIgnoreCase(name.toLowerCase())) {
-                schema = s;
-                break;
-            }
-        }
-
-        if (schema != null)
-            return schema;
+        if (schemasByName.containsKey(name))
+            return schemasByName.get(name);
         else
-            throw new NoSuchElementException("\nCouldn't find the required schema.\n");
-    }
-
-    public Schema dereferenceSchema(String name) {
-        for(Schema s: schemas)
-            if(s.getName().equalsIgnoreCase(name))
-                return s;
-
-        return null;
+            throw new NoSuchElementException("\nSchema + [" + name + "] not found.\n");
     }
 
     @Override
     public String toString() {
         StringBuilder print = new StringBuilder("servers: \n");
 
-        for(String server: servers)
+        for (String server : servers)
             print.append("   ").append(server).append("\n");
 
         print.append("invariants: \n");
-        if(invariants.isEmpty())
+        if (invariants.isEmpty())
             print.append("   empty\n");
 
-        for(Formula inv: invs)
+        for (Formula inv : invs)
             print.append("   ").append(inv.toString()).append("\n");
 
         print.append("paths: \n");
-        for(Entry<String, Map<String, Operation>> path: paths.entrySet()){
+        for (Entry<String, Map<String, Operation>> path : paths.entrySet()) {
             print.append("   ").append(path.getKey()).append(": \n");
 
-            for(Entry<String, Operation> operation: path.getValue().entrySet()) {
+            for (Entry<String, Operation> operation : path.getValue().entrySet()) {
                 // Operation ID
                 print.append("      ").append(operation.getValue().getVerb()).append("  ").append(operation.getValue().getOperationID()).append("\n");
 
                 // Path Parameters
-                if(operation.getValue().getPathParams().isEmpty())
+                if (operation.getValue().getPathParams().isEmpty())
                     print.append("        - path parameters: []\n");
                 else {
                     print.append("        - path parameters:\n");
@@ -247,34 +250,32 @@ public class Specification {
                 }
 
                 // Query Parameters
-                if(operation.getValue().getQueryParams().isEmpty())
+                if (operation.getValue().getQueryParams().isEmpty())
                     print.append("        - query parameters [required]: []\n");
                 else {
                     print.append("        - query parameters [required]:\n");
-                    for(URLParameter p: operation.getValue().getQueryParams())
-                        if(p.isRequired())
+                    for (URLParameter p : operation.getValue().getQueryParams())
+                        if (p.isRequired())
                             print.append("            ").append(p.getName());
                 }
 
                 // Request Body Schema
-                if(operation.getValue().getRequestBody() == null)
+                if (operation.getValue().getRequestBody() == null)
                     print.append("\n");
                 else {
                     RequestBodySchema body = operation.getValue().getRequestBody();
                     print.append("\n        - referenced schema:\n");
-                    if(body instanceof ReferencedBodySchema)
+                    if (body instanceof ReferencedBodySchema)
                         print.append("            ").append(((ReferencedBodySchema) body).getRef()).append("\n");
-
                 }
-
             }
         }
 
         // Schemas
         print.append("schemas: \n");
 
-        for(Schema schema: schemas)
-            print.append("   ").append(schema.toString()).append("\n");
+        for (Entry<String, Schema> e : schemasByName.entrySet())
+            print.append("   ").append(e.getValue().toString()).append("\n");
 
         return print.toString();
     }

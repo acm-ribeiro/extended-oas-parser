@@ -1,5 +1,7 @@
 package magmact_domain;
 
+import magmact_parser.VisitorOrientedParser;
+
 import java.io.Serializable;
 
 @SuppressWarnings("ALL")

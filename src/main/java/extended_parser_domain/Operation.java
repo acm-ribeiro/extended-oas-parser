@@ -1,8 +1,11 @@
 package extended_parser_domain;
 
 import magmact_domain.Formula;
+import magmact_parser.VisitorOrientedParser;
 
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Operation {
@@ -45,7 +48,7 @@ public class Operation {
     public boolean isGET() {
         return verb.equalsIgnoreCase("GET");
     }
-    
+
     public boolean isDELETE() {
         return verb.equalsIgnoreCase("DELETE");
     }
@@ -100,6 +103,21 @@ public class Operation {
 
     public void addPos(Formula f) {
         pos.add(f);
+    }
+
+    /**
+     * Resets the operations pre- and post-conditions to their initial values.
+     */
+    public void resetContract() {
+        VisitorOrientedParser parser = new VisitorOrientedParser();
+        pre = new ArrayList<>();
+        pos = new ArrayList<>();
+
+        for(String r : requires)
+            pre.add(parser.parse(r));
+
+        for(String e : ensures)
+            pos.add(parser.parse(e));
     }
 
     /**
