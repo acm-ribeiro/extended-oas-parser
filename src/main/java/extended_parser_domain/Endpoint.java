@@ -56,9 +56,11 @@ public class Endpoint implements Serializable {
     public Map<String, URLParameter> getParameters() {
         return parameters;
     }
+
     public LinkedHashMap<String, String> getPathValues() {
         return pathValues;
     }
+
     public Map<String, String> getQueryValues() {
         return queryValues;
     }
@@ -95,6 +97,15 @@ public class Endpoint implements Serializable {
         }
 
         return false;
+    }
+
+    /**
+     * Checks whether the endpoint has parameters (query or path).
+     *
+     * @return true if it has parameters; false otherwise;
+     */
+    public boolean hasParameters() {
+        return parameters.isEmpty();
     }
 
 
