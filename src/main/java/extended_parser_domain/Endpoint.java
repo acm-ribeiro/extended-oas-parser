@@ -100,12 +100,19 @@ public class Endpoint implements Serializable {
     }
 
     /**
-     * Checks whether the endpoint has parameters (query or path).
+     * Checks whether the endpoint has required path parameters.
      *
      * @return true if it has parameters; false otherwise;
      */
     public boolean hasParameters() {
-        return parameters.isEmpty();
+        boolean empty = true;
+        Iterator<String> it = pathValues.values().iterator();
+
+        while (it.hasNext() && empty)
+            if (!it.next().equals(""))
+                empty = false;
+
+        return empty;
     }
 
 
