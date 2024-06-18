@@ -201,6 +201,10 @@ public class Specification {
             throw new NoSuchElementException("\nSchema + [" + name + "] not found.\n");
     }
 
+    public Operation getOperation(String operationId) {
+        return operationsById.get(operationId);
+    }
+
     @Override
     public String toString() {
         StringBuilder print = new StringBuilder("servers: \n");
