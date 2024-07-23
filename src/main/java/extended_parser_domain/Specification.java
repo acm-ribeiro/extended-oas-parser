@@ -13,7 +13,7 @@ public class Specification {
     private List<Formula> invs;
     private Map<String, Map<String, Operation>> paths; // <path, <verb, operation>>
     private List<Schema> schemas;                      // resource schemas
-    private Map<String, Schema> schemasByName;               // resource schemas
+    private Map<String, Schema> schemasByName;         // resource schemas
     Map<String, Operation> operationsById;             // operations by id
     List<Operation> deletes;                           // all specification delete operations
 
@@ -101,6 +101,16 @@ public class Specification {
                 assert (requires.size() == op.getPre().size());
                 assert (ensures.size() == op.getPos().size());
             }
+    }
+
+    /**
+     * Dereferences a schema.
+     * @param name schema name
+     *
+     * @return schema.
+     */
+    public Schema dereferenceSchema(String name) {
+        return schemasByName.get(name);
     }
 
     /**
