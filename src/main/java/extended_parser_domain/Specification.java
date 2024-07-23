@@ -103,39 +103,6 @@ public class Specification {
             }
     }
 
-    /**
-     * Dereferences a schema.
-     * @param name schema name
-     *
-     * @return schema.
-     */
-    public Schema dereferenceSchema(String name) {
-        return schemasByName.get(name);
-    }
-
-    /**
-     * Returns a schema given its type.
-     *
-     * @param type schema's type.
-     * @return schema
-     * @throws NoSuchElementException when there is no schema with the given type.
-     */
-    public Schema getSchemaByType(String type) throws NoSuchElementException {
-        Schema schema = null;
-
-        int i = 0;
-        while (schema == null && i < schemas.size()) {
-            if (schemas.get(i).getType().equalsIgnoreCase(type))
-                schema = schemas.get(i);
-            i++;
-        }
-
-        if (schema != null)
-            return schema;
-        else
-            throw new NoSuchElementException("\nCouldn't find the required schema.\n");
-    }
-
 
     /**
      * Resets the give operation's contract.
