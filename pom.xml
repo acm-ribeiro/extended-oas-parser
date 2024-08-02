@@ -42,11 +42,14 @@
     </properties>
 
     <dependencies>
+
+        <!-- contract parser -->
         <dependency>
             <groupId>com.github.acm-ribeiro</groupId>
             <artifactId>magmact-parser</artifactId>
-            <version>b30ec37</version>
+            <version>d42762503d</version>
         </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
         <dependency>
