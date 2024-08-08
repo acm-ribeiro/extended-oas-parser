@@ -11,6 +11,7 @@ import java.util.List;
 public class Operation {
 
     private String operationID, verb, url;
+    private List<String> tags;
     private List<String> requires, ensures;
     private List<Formula> pre, pos;
     private List<URLParameter> queryParams, pathParams;
@@ -67,6 +68,10 @@ public class Operation {
 
     public String getUrl() {
         return url;
+    }
+
+    public List<String> getTags() {
+        return tags;
     }
 
     public List<URLParameter> getQueryParams() {

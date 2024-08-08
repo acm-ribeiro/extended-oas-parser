@@ -256,6 +256,16 @@ public class Specification {
                     if (body instanceof ReferencedBodySchema)
                         print.append("            ").append(((ReferencedBodySchema) body).getRef()).append("\n");
                 }
+
+                if (operation.getValue().getTags().isEmpty()) {
+                    print.append("        - tags: []\n");
+                } else {
+                    List<String> tags = operation.getValue().getTags();
+                    print.append("        - tags: [\n");
+                    for(String tag : tags)
+                        print.append("           " ).append(tag).append("\n");
+                    print.append("]");
+                }
             }
         }
 
