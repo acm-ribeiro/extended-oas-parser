@@ -1,5 +1,6 @@
 package extended_parser_domain;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class Schema extends RequestBodySchema {
@@ -27,6 +28,19 @@ public class Schema extends RequestBodySchema {
 
 	public List<APIProperty> getProperties() {
 		return properties;
+	}
+
+	public APIProperty getProperty(String name) {
+		Iterator<APIProperty> it = properties.iterator();
+		APIProperty next, found = null;
+
+		while (it.hasNext() && found == null) {
+			next = it.next();
+			if (next.getName().equals(name))
+				found = next;
+		}
+
+		return found;
 	}
 
 	public String toString() {
