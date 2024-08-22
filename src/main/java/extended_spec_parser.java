@@ -9,5 +9,6 @@ public class extended_spec_parser {
         spec.initDerivedFields();
         spec.parseFormulas();
         System.out.println(spec);
+        System.out.println("done");
     }
 }

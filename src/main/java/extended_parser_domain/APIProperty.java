@@ -2,28 +2,46 @@ package extended_parser_domain;
 
 public class APIProperty {
 
-	private String name, type, pattern, format, itemsType;
-	private int min, max;
-	private boolean isCollection, required, gen;
+	private final String name;
+	private final String type;
+	private final String format;
+	private final String itemsType;
+	private final String itemsFormat;
+	private final String itemsPattern;
+	private final String ref;
+	private String pattern;
 
-	public APIProperty(String name, String type, String pattern, String format, String itemsType, int minimum, int maximum, boolean isCollection, boolean required, boolean gen) {
+	private final int minimum, maximum;
+	private final boolean isCollection;
+	private final boolean required, gen;
+
+	public APIProperty(String name, String type, String pattern, String format, String itemsType,
+					   String itemsFormat, String itemsPattern, String ref, int minimum,
+					   int maximum, boolean isCollection, boolean required, boolean gen) {
 		this.name = name;
 		this.type = type;
 		this.pattern = pattern;
 		this.format = format;
 		this.itemsType = itemsType;
-		this.min = minimum;
-		this.max = maximum;
+		this.itemsFormat = itemsFormat;
+		this.itemsPattern = itemsPattern;
+		this.minimum = minimum;
+		this.maximum = maximum;
 		this.isCollection = isCollection;
 		this.required = required;
 		this.gen = gen;
+		this.ref = ref;
+	}
+
+	public String getRef() {
+		return ref;
 	}
 
 	public boolean isRequired() {
 		return required;
 	}
-	
-	public boolean gen() {
+
+	public boolean isGen() {
 		return gen;
 	}
 
@@ -38,19 +56,27 @@ public class APIProperty {
 	public String getFormat() {
 		return format;
 	}
-	
-	public int getMin () {
-		return min;
+
+	public int getMinimum () {
+		return minimum;
 	}
-	
-	public int getMax () {
-		return max;
+
+	public int getMaximum () {
+		return maximum;
 	}
-	
-	public String getItemType() {
+
+	public String getItemsType() {
 		return itemsType;
 	}
-	
+
+	public String getItemsFormat() {
+		return itemsFormat;
+	}
+
+	public String getItemsPattern() {
+		return itemsPattern;
+	}
+
 	public String getPattern() {
 		return pattern;
 	}
@@ -58,29 +84,23 @@ public class APIProperty {
 	public void setPattern(String pattern) {
 		this.pattern = pattern;
 	}
-	
+
 	public boolean isCollection() {
 		return isCollection;
 	}
-	
-	public String toString () {		
-		StringBuilder str = new StringBuilder("\n        " + name + ":\n           type: " + type + ", required: "
-				+ required + ", gen: " + gen + ", ");
 
-		switch (type) {
-			case "string" -> {
-				if (pattern == null || pattern.equals(""))
-					str.append("pattern: empty");
-				else
-					str.append("pattern: ").append(pattern);
-			}
+	public String toString () {
+		String space = "\n        ";
+		if(isCollection)
+			return space + name + " {type: " + type + ", pattern: " + pattern + ", itemsType: " + itemsType + ", required: " + required + "}";
+		else if(minimum == -999 && format != null && format.equals(""))
+			return space + name + " {type: " + type + ", pattern: " + pattern + ", required: " + required + "}";
+		else if(minimum != -999 && format != null && format.equals(""))
+			return space + name + " {type: " + type + ", pattern: " + pattern +  ", required: " + required + ", minimum: " + minimum + "}";
+		else if(minimum == -999)
+			return space + name + " {type: " + type + ", pattern: " + pattern + ", required: " + required + ", format: " + format + "}";
+		else
+			return space + name + " {type: " + type + ", pattern: " + pattern + ", required: " + required + ", format: " + format + ", minimum: " + minimum + "}";
 
-			case "integer" -> str.append("min: ").append(min).append(", max: ")
-					.append(max).append(", format: ").append(format);
-
-			case "array" -> str.append("isCollection: ").append(isCollection);
-		}
-
-		return str.toString();
 	}
 }

@@ -16,14 +16,16 @@ public class URLParameter {
         for (APIProperty prop : schema) {
             switch (prop.getType().toLowerCase()) {
                 case "integer" ->
-                        this.schema = new URLIntegerProperty(prop.getName(), prop.getType(), prop.getMin(), prop.getMax(), prop.getFormat());
+                        this.schema = new URLIntegerProperty(prop.getName(), prop.getType(),
+                                prop.getMinimum(), prop.getMaximum(), prop.getFormat());
                 case "string" -> {
                     String pattern = prop.getPattern() != null ? prop.getPattern() : "";
                     this.schema = new URLStringProperty(prop.getName(), prop.getType(), pattern);
                 }
                 case "array" -> {
-                    System.out.println(prop.getItemType());
-                    this.schema = new URLArrayProperty(prop.getName(), prop.getType(), prop.getItemType());
+                    System.out.println(prop.getItemsType());
+                    this.schema = new URLArrayProperty(prop.getName(), prop.getType(),
+                            prop.getItemsType());
                 }
             }
         }

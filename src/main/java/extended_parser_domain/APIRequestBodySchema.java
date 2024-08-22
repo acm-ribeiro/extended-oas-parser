@@ -12,25 +12,21 @@ public class APIRequestBodySchema extends RequestBodySchema {
         this.name = name;
         this.properties = new ArrayList<>();
 
-        for(APIProperty prop : properties) {
+        for (APIProperty prop : properties) {
             // TODO case "object"
-            switch (prop.getType().toLowerCase()){
-                case "integer":
-                    this.properties.add(
-                            new IntegerProperty(prop.getName(), prop.getType(), prop.isRequired(), prop.gen(),
-                                    prop.getMin(), prop.getMax(), prop.getFormat())
-                    );
-                    break;
-                case "string":
-                    this.properties.add(
-                            new StringProperty(prop.getName(), prop.getType(), prop.isRequired(), prop.gen(), prop.getPattern())
-                    );
-                    break;
-                case "array":
-                    this.properties.add(
-                            new ArrayProperty(prop.getName(), prop.getType(), prop.isRequired(), prop.gen(), prop.getItemType())
-                    );
-                    break;
+            switch (prop.getType().toLowerCase()) {
+                case "integer" -> this.properties.add(
+                        new IntegerProperty(prop.getName(), prop.getType(), prop.isRequired(),
+                                prop.isGen(), prop.getMinimum(), prop.getMaximum(), prop.getFormat())
+                );
+                case "string" -> this.properties.add(
+                        new StringProperty(prop.getName(), prop.getType(), prop.isRequired(),
+                                prop.isGen(), prop.getPattern())
+                );
+                case "array" -> this.properties.add(
+                        new ArrayProperty(prop.getName(), prop.getType(), prop.isRequired(),
+                                prop.isGen(), prop.getItemsType())
+                );
             }
         }
     }

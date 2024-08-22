@@ -8,18 +8,33 @@ import java.io.FileReader;
 
 public class Parser {
 
+    // tokens 
+    public static final String REF = "ref";
+    public static final String TYPE = "type";
+    public static final String NAME = "name";
+    public static final String PATTERN = "pattern";
+    public static final String FORMAT = "format";
+    public static final String ITEMS_TYPE = "itemsType";
+    public static final String MIN = "min";
+    public static final String MAX = "max";
+    public static final String NO_VAL = "";
+
+    // data types
+    public static final String STRING = "string";
+    public static final String INTEGER = "integer";
+    public static final String ARRAY = "array";
+
     public static Specification parse(String fileLocation) {
         GsonBuilder gsonBuilder = new GsonBuilder();
 
         // Custom json deserializer for abstract class RequestBodySchema
         JsonDeserializer<RequestBodySchema> requestBodyDeserializer = (json, typeOfT, context) -> {
             JsonObject object = json.getAsJsonObject();
-
-            if(object.has("ref"))
-                return new ReferencedBodySchema(object.get("ref").getAsString());
+            if(object.has(REF))
+                return new ReferencedBodySchema(object.get(REF).getAsString());
             else {
                 // TODO: do we want to deal with explicit schemas?
-                return new Schema(object.get("type").getAsString(), object.get("name").getAsString(), null);
+                return new Schema(object.get(NAME).getAsString(), object.get(NAME).getAsString(), null);
             }
         };
 
@@ -28,24 +43,25 @@ public class Parser {
             URLProperty property = null;
             JsonObject obj = json.getAsJsonObject();
 
-            if(obj.has("ref"))
-                property = new ReferencedURLProperty(obj.get("ref").getAsString());
+            if(obj.has(REF))
+                property = new ReferencedURLProperty(obj.get(REF).getAsString());
             else {
-                String name = obj.get("name").getAsString();
-                String type = obj.get("type").getAsString().toLowerCase();
+                String name = obj.get(NAME).getAsString();
+                String type = obj.get(TYPE).getAsString().toLowerCase();
 
                 switch (type) {
-                    case "string" -> {
-                        String pattern = obj.has("pattern")? obj.get("pattern").getAsString() : "";
+                    case STRING -> {
+                        String pattern = obj.has(PATTERN)? obj.get(PATTERN).getAsString() : NO_VAL;
                         property = new URLStringProperty(name, type, pattern);
                     }
-                    case "integer" -> {
-                        int min = obj.get("min").getAsInt();
-                        int max = obj.get("max").getAsInt();
-                        String format = obj.has("format")? obj.get("format").getAsString() : "";
+                    case INTEGER -> {
+                        int min = obj.get(MIN).getAsInt();
+                        int max = obj.get(MAX).getAsInt();
+                        String format = obj.has(FORMAT)? obj.get(FORMAT).getAsString() : NO_VAL;
                         property = new URLIntegerProperty(name, type, min, max, format);
                     }
-                    case "array" -> property = new URLArrayProperty(name, type, obj.get("itemsType").getAsString());
+                    case ARRAY -> property = new URLArrayProperty(name, type,
+                            obj.get(ITEMS_TYPE).getAsString());
 
                 }
             }

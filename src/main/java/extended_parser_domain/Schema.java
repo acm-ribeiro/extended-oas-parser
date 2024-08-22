@@ -4,8 +4,8 @@ import java.util.List;
 
 public class Schema extends RequestBodySchema {
 
-	private String type, name;
-	private List<APIProperty> properties;
+	private final String type, name;
+	private final List<APIProperty> properties;
 
 	public Schema(String type, String name, List<APIProperty> properties) {
 		this.type = type;
@@ -20,7 +20,7 @@ public class Schema extends RequestBodySchema {
 	public String getType() {
 		return type;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -30,10 +30,15 @@ public class Schema extends RequestBodySchema {
 	}
 
 	public String toString() {
-		StringBuilder s = new StringBuilder(name + ":");
-		for (APIProperty p : properties)
-			s.append(p.toString());
-		return s + "\n";
+		StringBuilder s = new StringBuilder("[ ");
+
+		if (properties.isEmpty())
+			s.append(name).append(": ").append(type);
+		else
+			for (APIProperty p : properties)
+				s.append(p.toString());
+
+		return s + "\n]";
 	}
 
 }
