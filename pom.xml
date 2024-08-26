@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.github.acm-ribeiro</groupId>
             <artifactId>magmact-parser</artifactId>
-            <version>d42762503d</version>
+            <version>024492f9c3</version>
         </dependency>
 
 
