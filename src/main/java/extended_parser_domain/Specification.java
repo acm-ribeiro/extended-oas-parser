@@ -9,13 +9,13 @@ import java.util.Map.Entry;
 public class Specification {
 
     private List<String> servers;                       // server urls
-    private List<String> invariants;
-    private List<Formula> invs;
-    private Map<String, Map<String, Operation>> paths; // <path, <verb, operation>>
-    private List<Schema> schemas;                      // resource schemas
-    private Map<String, Schema> schemasByName;         // resource schemas
-    Map<String, Operation> operationsById;             // operations by id
-    List<Operation> deletes;                           // all specification delete operations
+    private List<String> invariants;                    // Spec invariants as strings
+    private List<Formula> invs;                         // Spec invariants as formulae
+    private Map<String, Map<String, Operation>> paths;  // <path, <verb, operation>>
+    private List<Schema> schemas;                       // resource schemas
+    private Map<String, Schema> schemasByName;          // resource schemas
+    private Map<String, Operation> operationsById;      // operations by id
+    private List<Operation> deletes;                    // all specification delete operations
 
 
     public Specification() {
@@ -158,6 +158,20 @@ public class Specification {
      */
     public Map<String, Map<String, Operation>> getPaths() {
         return paths;
+    }
+
+    /**
+     * Returns the total number of path parameters of the API.
+     *
+     * @return number of path parameters.
+     */
+    public int getNumParams() {
+        int params = 0;
+
+        for (Operation op : operationsById.values())
+            params += op.getPathParams().size();
+
+        return params;
     }
 
     public String getParameterRegex(Operation op, String p) {
