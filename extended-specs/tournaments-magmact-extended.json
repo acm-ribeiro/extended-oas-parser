@@ -3,14 +3,14 @@
     "http://localhost:8081"
   ],
   "tags": [
-    "tournaments",
-    "enrollments",
-    "players"
+    "tournament",
+    "enrollment",
+    "player"
   ],
   "invariants": [
-    "for t in response_body(GET /tournaments) :- response_body(GET /tournaments/{t.tid}/players).length <= response_body(GET /tournaments/{t.tid}/capacity)", 
+    "for t in response_body(GET /tournaments) :- response_body(GET /tournaments/{t.tid}/players).length <= response_body(GET /tournaments/{t.tid}/capacity)",
     "for t in response_body(GET /tournaments) : for pid in response_body(GET /tournaments/{t.tid}/players) :- response_code(GET /players/{pid}) == 200",
-    "for p in response_body(GET/players) : for tid in response_body(GET /players/{p.pid}/tournaments) :- response_code(GET /tournaments/{tid}) == 200"
+    "for p in response_body(GET /players) : for tid in response_body(GET /players/{p.pid}/tournaments) :- response_code(GET /tournaments/{tid}) == 200"
   ],
   "paths": {
     "/tournaments/{tid}/players": {
@@ -69,6 +69,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "tournament"
         ]
       }
     },
@@ -126,6 +129,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "players"
         ]
       }
     },
@@ -185,6 +191,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "tournament"
         ]
       },
       "GET": {
@@ -241,6 +250,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "tournament"
         ]
       },
       "PUT": {
@@ -312,6 +324,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "tournament"
         ]
       }
     },
@@ -361,6 +376,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "player"
         ]
       },
       "GET": {
@@ -385,6 +403,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "player"
         ]
       }
     },
@@ -444,6 +465,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "enrollment"
         ]
       },
       "GET": {
@@ -500,6 +524,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "enrollment"
         ]
       }
     },
@@ -557,6 +584,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "player"
         ]
       },
       "GET": {
@@ -611,6 +641,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "player"
         ]
       },
       "PUT": {
@@ -670,6 +703,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "player"
         ]
       }
     },
@@ -728,6 +764,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "tournament"
         ]
       }
     },
@@ -786,6 +825,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "tournament"
         ]
       },
       "GET": {
@@ -810,6 +852,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "tournament"
         ]
       }
     },
@@ -817,15 +862,16 @@
       "POST": {
         "operationID": "postEnrollment",
         "requires": [
-          "response_code(GET /enrollments/request_body(this){eid}) == 404", 
+          "response_code(GET /enrollments/request_body(this){eid}) == 404",
           "response_code(GET /players/request_body(this){pid}) == 200",
           "response_code(GET /tournaments/request_body(this){tid}) == 200"
         ],
         "ensures": [
-          "response_code(GET /enrollments/{eid}) == 200", 
+          "response_code(GET /enrollments/request_body(this){eid}) == 200",
           "response_code(GET /players/request_body(this){pid}) == 200",
-          "response_code(GET /tournaments/request_body(this){tid}) == 200", 
-          "response_body(this) == request_body(this)"
+          "response_code(GET /tournaments/request_body(this){tid}) == 200",
+          "response_body(this) == request_body(this)",
+          "response_body(GET /tournaments/request_body(this){tid}/capacity) > response_body(GET/tournaments/request_body(this){tid}/players)"
         ],
         "pathParams": [],
         "queryParams": [],
@@ -883,6 +929,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "enrollment"
         ]
       },
       "GET": {
@@ -907,6 +956,9 @@
               "application/json"
             ]
           }
+        ],
+        "tags": [
+          "enrollment"
         ]
       }
     }
@@ -920,6 +972,7 @@
           "pattern": "",
           "name": "code",
           "type": "string",
+          "refersTo": "",
           "required": false,
           "gen": false
         },
@@ -927,6 +980,7 @@
           "pattern": "",
           "name": "message",
           "type": "string",
+          "refersTo": "",
           "required": false,
           "gen": false
         }
@@ -942,6 +996,7 @@
           "max": 999,
           "name": "tid",
           "type": "integer",
+          "refersTo": "",
           "required": true,
           "gen": false
         },
@@ -949,6 +1004,7 @@
           "pattern": "",
           "name": "tournamentName",
           "type": "string",
+          "refersTo": "",
           "required": true,
           "gen": false
         },
@@ -958,15 +1014,16 @@
           "max": 999,
           "name": "capacity",
           "type": "integer",
+          "refersTo": "",
           "required": false,
           "gen": false
         },
         {
           "itemsType": "string",
           "itemsFormat": "",
-          "refersTo": "#/schemas/player",
           "name": "players",
           "type": "array",
+          "refersTo": "",
           "required": false,
           "gen": false
         }
@@ -980,6 +1037,7 @@
           "pattern": "(1|2)[0-9]{8}",
           "name": "pid",
           "type": "string",
+          "refersTo": "",
           "required": true,
           "gen": false
         },
@@ -987,6 +1045,7 @@
           "pattern": "",
           "name": "name",
           "type": "string",
+          "refersTo": "",
           "required": true,
           "gen": false
         },
@@ -994,15 +1053,16 @@
           "pattern": "[A-Za-z0-9]+[-_\\\\.]*[A-Za-z0-9]*\\\\@[A-Za-z]+\\\\.[A-Za-z]+",
           "name": "email",
           "type": "string",
+          "refersTo": "",
           "required": true,
           "gen": false
         },
         {
           "itemsType": "integer",
           "itemsFormat": "int64",
-          "refersTo": "#/schemas/tournament",
           "name": "tournaments",
           "type": "array",
+          "refersTo": "",
           "required": false,
           "gen": false
         }
@@ -1018,6 +1078,7 @@
           "max": 999,
           "name": "eid",
           "type": "integer",
+          "refersTo": "",
           "required": true,
           "gen": false
         },
@@ -1025,6 +1086,7 @@
           "pattern": "(1|2)[0-9]{8}",
           "name": "pid",
           "type": "string",
+          "refersTo": "Player/pid",
           "required": true,
           "gen": false
         },
@@ -1034,6 +1096,7 @@
           "max": 999,
           "name": "tid",
           "type": "integer",
+          "refersTo": "Tournament/tid",
           "required": true,
           "gen": false
         }

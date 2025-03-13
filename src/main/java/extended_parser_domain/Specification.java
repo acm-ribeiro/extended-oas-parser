@@ -174,6 +174,8 @@ public class Specification {
         return params;
     }
 
+
+
     public String getParameterRegex(Operation op, String p) {
         URLParameter parameter = findOperationParameter(op, p);
         URLProperty parameterSchema = parameter != null ? parameter.getSchema() : null;
