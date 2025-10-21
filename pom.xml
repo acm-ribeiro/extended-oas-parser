@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.github.acm-ribeiro</groupId>
             <artifactId>glacier-parser</artifactId>
-            <version>fcfa79c295</version>
+            <version>61716f1bf4</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
