@@ -48,7 +48,7 @@ public class TestDomain {
         Operation op = spec.getOperations().get("getPlayer");
         Endpoint e = op.getEndpoint();
 
-        String expected = "/players/{playerNIF}";
+        String expected = "/players/{pid}";
         String actual = e.toString();
 
         assertEquals(expected, actual);
@@ -56,10 +56,10 @@ public class TestDomain {
 
     @Test
     void test_operation_endpoint_multiple_params() {
-        Operation op = spec.getOperations().get("checkEnrollment");
+        Operation op = spec.getOperations().get("checkTournamentEnrollment");
         Endpoint e = op.getEndpoint();
 
-        String expected = "/tournaments/{tournamentId}/enrollments/{playerNIF}";
+        String expected = "/tournaments/{tid}/players/{pid}";
         String actual = e.toString();
 
         assertEquals(expected, actual);
@@ -67,12 +67,12 @@ public class TestDomain {
 
     @Test
     void test_operation_endpoint_multiple_params_replacement() {
-        Operation op = spec.getOperations().get("checkEnrollment");
+        Operation op = spec.getOperations().get("checkTournamentEnrollment");
         Endpoint e = op.getEndpoint();
-        e.putPathValue("playerNIF", "123");
-        e.putPathValue("tournamentId", "1");
+        e.putPathValue("pid", "123");
+        e.putPathValue("tid", "1");
 
-        String expected = "/tournaments/1/enrollments/123";
+        String expected = "/tournaments/1/players/123";
         String actual = e.toString();
 
         assertEquals(expected, actual);
@@ -80,17 +80,17 @@ public class TestDomain {
 
     @Test
     void test_operation_endpoint_multiple_params_replacement_query() {
-        Operation op = spec.getOperations().get("checkEnrollment");
+        Operation op = spec.getOperations().get("checkTournamentEnrollment");
         Endpoint e = op.getEndpoint();
 
-        e.putPathValue("playerNIF", "123");
-        e.putPathValue("tournamentId", "1");
+        e.putPathValue("pid", "123");
+        e.putPathValue("tid", "1");
 
-        e.putQueryValue("sort", "playerNIF");
+        e.putQueryValue("sort", "pid");
         e.putQueryValue("filter", "firstName");
 
-        String expected1 = "/tournaments/1/enrollments/123?sort=playerNIF&filter=firstName";
-        String expected2 = "/tournaments/1/enrollments/123?filter=firstName&sort=playerNIF";
+        String expected1 = "/tournaments/1/players/123?sort=pid&filter=firstName";
+        String expected2 = "/tournaments/1/players/123?filter=firstName&sort=pid";
         String actual = e.toString();
 
         assert(expected1.equals(actual) || expected2.equals(actual));
@@ -113,6 +113,6 @@ public class TestDomain {
 
     @BeforeAll
     static void initSpec() {
-        spec = Parser.parse("/Users/acm.ribeiro/Desktop/run-specs/magmact/tournaments-magmact-extended.json");
+        spec = Parser.parse("extended-specs/tournaments-glacier-extended.json");
     }
 }

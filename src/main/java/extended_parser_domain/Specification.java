@@ -1,10 +1,10 @@
 package extended_parser_domain;
 
-import magmact_domain.Formula;
-import magmact_parser.VisitorOrientedParser;
-
 import java.util.*;
 import java.util.Map.Entry;
+
+import domain.Formula;
+import parser.VisitorOrientedParser;
 
 public class Specification {
 
@@ -76,13 +76,13 @@ public class Specification {
      */
     public void parseFormulas() {
         List<String> requires, ensures;
-        VisitorOrientedParser magmact_parser = new VisitorOrientedParser();
+        VisitorOrientedParser glacier_parser = new VisitorOrientedParser();
 
         invs = new ArrayList<>();
 
         // Parsing invariants
         for (String invariant : invariants)
-            invs.add(magmact_parser.parse(invariant));
+            invs.add(glacier_parser.parse(invariant));
 
         // Parsing pre and postconditions
         for (Map<String, Operation> e : paths.values())
@@ -92,10 +92,10 @@ public class Specification {
                 ensures = op.getEnsures();
 
                 for (String req : requires)
-                    op.addPre(magmact_parser.parse(req));
+                    op.addPre(glacier_parser.parse(req));
 
                 for (String ens : ensures)
-                    op.addPos(magmact_parser.parse(ens));
+                    op.addPos(glacier_parser.parse(ens));
 
                 // this should always be true
                 assert (requires.size() == op.getPre().size());

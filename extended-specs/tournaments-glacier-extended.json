@@ -3,16 +3,362 @@
     "http://localhost:8081"
   ],
   "tags": [
-    "tournaments",
-    "enrollments",
-    "players"
+    "tournament",
+    "enrollment",
+    "player"
   ],
   "invariants": [
-    "for t in response_body(GET /tournaments) :- response_body(GET /tournaments/{t.tid}/players).length <= response_body(GET /tournaments/{t.tid}/capacity)", 
+    "for t in response_body(GET /tournaments) :- response_body(GET /tournaments/{t.tid}/players).length <= response_body(GET /tournaments/{t.tid}/capacity)",
     "for t in response_body(GET /tournaments) : for pid in response_body(GET /tournaments/{t.tid}/players) :- response_code(GET /players/{pid}) == 200",
     "for p in response_body(GET /players) : for tid in response_body(GET /players/{p.pid}/tournaments) :- response_code(GET /tournaments/{tid}) == 200"
   ],
   "paths": {
+    "/tournaments": {
+      "POST": {
+        "operationID": "postTournament",
+        "requires": [
+          "response_code(GET /tournaments/request_body(this){tid}) == 404"
+        ],
+        "ensures": [
+          "response_code(GET /tournaments/request_body(this){tid}) == 200"
+        ],
+        "pathParams": [],
+        "queryParams": [],
+        "requestBody": {
+          "ref": "#/schemas/tournament"
+        },
+        "responses": [
+          {
+            "responseCode": 201,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/tournament"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 403,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 409,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 500,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "tournament"
+        ]
+      },
+      "GET": {
+        "operationID": "getTournaments",
+        "requires": [
+          "T"
+        ],
+        "ensures": [
+          "T"
+        ],
+        "pathParams": [],
+        "queryParams": [],
+        "responses": [
+          {
+            "responseCode": 200,
+            "contentSchema": {
+              "schemaType": "array",
+              "format": "",
+              "items": "#/components/schemas/Tournament"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "tournament"
+        ]
+      }
+    },
+    "/tournaments/{tid}": {
+      "DELETE": {
+        "operationID": "deleteTournament",
+        "requires": [
+          "response_code(GET /tournaments/{tid}) == 200",
+          "for eid in response_body(GET /enrollments) :- response_code(GET /tournaments/{tid}/players/{e.pid}) == 404"
+        ],
+        "ensures": [
+          "response_code(GET /tournaments/{tid}) == 404",
+          "response_body(this) != previous(response_body(GET /tournaments/{tid}))"
+        ],
+        "pathParams": [
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "min": -999,
+              "max": 999,
+              "name": "tid",
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "queryParams": [],
+        "responses": [
+          {
+            "responseCode": 200,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/tournament"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 404,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 500,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "tournament"
+        ]
+      },
+      "GET": {
+        "operationID": "getTournament",
+        "requires": [
+          "T"
+        ],
+        "ensures": [
+          "T"
+        ],
+        "pathParams": [
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "min": -999,
+              "max": 999,
+              "name": "tid",
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "queryParams": [],
+        "responses": [
+          {
+            "responseCode": 200,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/tournament"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 404,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 500,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "tournament"
+        ]
+      },
+      "PUT": {
+        "operationID": "updateTournament",
+        "requires": [
+          "response_code(GET /tournaments/{tid}) == 200", 
+          "response_body(GET /tournaments/{tid}/capacity) <= request_body(this){capacity}"
+        ],
+        "ensures": [
+          "response_code(GET /tournaments/{tid}) == 200",
+          "response_body(this) != previous(response_body(GET /tournaments/{tid}))",
+          "response_body(this) == request_body(this)"
+        ],
+        "pathParams": [
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "min": -999,
+              "max": 999,
+              "name": "tid",
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "queryParams": [],
+        "requestBody": {
+          "ref": "#/schemas/tournament"
+        },
+        "responses": [
+          {
+            "responseCode": 200,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/tournament"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 404,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 409,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 500,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "tournament"
+        ]
+      }
+    },
+    "/tournaments/{tid}/capacity": {
+      "GET": {
+        "operationID": "getTournamentCapacity",
+        "requires": [
+          "response_code(GET /tournaments/{tid}) == 200"
+        ],
+        "ensures": [
+          "response_code(GET /tournaments/{tid}) == 200"
+        ],
+        "pathParams": [
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "min": -999,
+              "max": 999,
+              "name": "tid",
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "queryParams": [],
+        "responses": [
+          {
+            "responseCode": 200,
+            "contentSchema": {
+              "schemaType": "integer",
+              "format": "int32"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 404,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 500,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "tournament"
+        ]
+      }
+    },
     "/tournaments/{tid}/players": {
       "GET": {
         "operationID": "getTournamentEnrollments",
@@ -28,7 +374,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "min": 0,
+              "min": -999,
               "max": 999,
               "name": "tid",
               "type": "integer",
@@ -71,7 +417,335 @@
           }
         ],
         "tags": [
-          "tournaments"
+          "tournament"
+        ]
+      }
+    },
+    "/tournaments/{tid}/players/{pid}" : {
+      "GET": {
+        "operationID": "checkTournamentEnrollment",
+        "requires": [
+          "response_code(GET /tournaments/{tid}) == 200"
+        ],
+        "ensures": [
+          "response_code(GET /tournaments/{tid}) == 200"
+        ],
+        "pathParams": [
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "min": -999,
+              "max": 999,
+              "name": "tid",
+              "type": "integer",
+              "format": "int64"
+            }
+          }, 
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "name": "pid",
+              "type": "string",
+              "pattern": ""
+            }
+          }
+        ],
+        "queryParams": [],
+        "responses": [
+          {
+            "responseCode": 200,
+            "contentSchema": {
+              "schemaType": "boolean"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 404,
+            "contentSchema": {
+              "schemaType": "boolean"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 500,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "tournament"
+        ]
+      }
+    },
+    "/players": {
+      "POST": {
+        "operationID": "postPlayer",
+        "requires": [
+          "response_code(GET /players/request_body(this){pid}) == 404"
+        ],
+        "ensures": [
+          "response_code(GET /players/request_body(this){pid}) == 200",
+          "response_body(this) == request_body(this)"
+        ],
+        "pathParams": [],
+        "queryParams": [],
+        "requestBody": {
+          "ref": "#/schemas/player"
+        },
+        "responses": [
+          {
+            "responseCode": 201,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/player"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 409,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 500,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "player"
+        ]
+      },
+      "GET": {
+        "operationID": "getPlayers",
+        "requires": [
+          "T"
+        ],
+        "ensures": [
+          "T"
+        ],
+        "pathParams": [],
+        "queryParams": [],
+        "responses": [
+          {
+            "responseCode": 200,
+            "contentSchema": {
+              "schemaType": "array",
+              "format": "",
+              "items": "#/components/schemas/Player"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "player"
+        ]
+      }
+    },
+    "/players/{pid}": {
+      "DELETE": {
+        "operationID": "deletePlayer",
+        "requires": [
+          "response_code(GET /players/{pid}) == 200", 
+          "for e in response_body(GET /enrollments) :- response_code(GET /players/{pid}/tournaments/{e.tid}) == 404"
+        ],
+        "ensures": [
+          "response_code(GET /players/{pid}) == 404",
+          "request_body(this) != previous(response_body(GET /players/{pid}))"
+        ],
+        "pathParams": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "name": "pid",
+              "type": "string",
+              "pattern": ""
+            }
+          }
+        ],
+        "queryParams": [],
+        "responses": [
+          {
+            "responseCode": 200,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/player"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 404,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 500,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "player"
+        ]
+      },
+      "GET": {
+        "operationID": "getPlayer",
+        "requires": [
+          "T"
+        ],
+        "ensures": [
+          "T"
+        ],
+        "pathParams": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "name": "pid",
+              "type": "string",
+              "pattern": ""
+            }
+          }
+        ],
+        "queryParams": [],
+        "responses": [
+          {
+            "responseCode": 200,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/player"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 404,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 500,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "player"
+        ]
+      },
+      "PUT": {
+        "operationID": "updatePlayer",
+        "requires": [
+          "response_code(GET /players/{pid}) == 200"
+        ],
+        "ensures": [
+          "response_code(GET /players/{pid}) == 200",
+          "request_body(this) != previous(response_body(GET /players/{pid}))",
+          "response_body(this) == request_body(this)"
+        ],
+        "pathParams": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "name": "pid",
+              "type": "string",
+              "pattern": ""
+            }
+          }
+        ],
+        "queryParams": [],
+        "requestBody": {
+          "ref": "#/schemas/player"
+        },
+        "responses": [
+          {
+            "responseCode": 200,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/player"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 404,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 500,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "player"
         ]
       }
     },
@@ -135,597 +809,33 @@
         ]
       }
     },
-    "/tournaments/{tid}": {
-      "DELETE": {
-        "operationID": "deleteTournament",
-        "requires": [
-          "response_code(GET /tournaments/{tid}) == 200"
-        ],
-        "ensures": [
-          "response_code(GET /tournaments/{tid}) == 404",
-          "response_body(this) != previous(response_body(GET /tournaments/{tid}))"
-        ],
-        "pathParams": [
-          {
-            "name": "tid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "min": 0,
-              "max": 999,
-              "name": "tid",
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "queryParams": [],
-        "responses": [
-          {
-            "responseCode": 200,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/tournament"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 404,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 500,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          }
-        ],
-        "tags": [
-          "tournaments"
-        ]
-      },
+    "/players/{pid}/tournaments/{tid}" : {
       "GET": {
-        "operationID": "getTournament",
+        "operationID": "checkPlayerEnrollment",
         "requires": [
-          "T"
+          "response_code(GET /players/{pid}) == 200"
         ],
         "ensures": [
-          "T"
+          "response_code(GET /players/{pid}) == 200"
         ],
         "pathParams": [
           {
-            "name": "tid",
+            "name": "pid",
             "in": "path",
             "required": true,
             "schema": {
-              "min": 0,
-              "max": 999,
-              "name": "tid",
-              "type": "integer",
-              "format": "int64"
+              "name": "pid",
+              "type": "string",
+              "pattern": ""
             }
-          }
-        ],
-        "queryParams": [],
-        "responses": [
-          {
-            "responseCode": 200,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/tournament"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 404,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 500,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          }
-        ],
-        "tags": [
-          "tournaments"
-        ]
-      },
-      "PUT": {
-        "operationID": "updateTournament",
-        "requires": [
-          "response_code(GET /tournaments/{tid}) == 200"
-        ],
-        "ensures": [
-          "response_code(GET /tournaments/{tid}) == 200",
-          "response_body(this) != previous(response_body(GET /tournaments/{tid}))",
-          "response_body(this) == request_body(this)"
-        ],
-        "pathParams": [
+          }, 
           {
             "name": "tid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "min": 0,
-              "max": 999,
-              "name": "tid",
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "queryParams": [],
-        "requestBody": {
-          "ref": "#/schemas/tournament"
-        },
-        "responses": [
-          {
-            "responseCode": 200,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/tournament"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 404,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 409,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 500,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          }
-        ],
-        "tags": [
-          "tournaments"
-        ]
-      }
-    },
-    "/players": {
-      "POST": {
-        "operationID": "postPlayer",
-        "requires": [
-          "response_code(GET /players/request_body(this){pid}) == 404"
-        ],
-        "ensures": [
-          "response_code(GET /players/request_body(this){pid}) == 200",
-          "response_body(this) == request_body(this)"
-        ],
-        "pathParams": [],
-        "queryParams": [],
-        "requestBody": {
-          "ref": "#/schemas/player"
-        },
-        "responses": [
-          {
-            "responseCode": 201,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/player"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 409,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 500,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          }
-        ],
-        "tags": [
-          "players"
-        ]
-      },
-      "GET": {
-        "operationID": "getPlayers",
-        "requires": [
-          "T"
-        ],
-        "ensures": [
-          "T"
-        ],
-        "pathParams": [],
-        "queryParams": [],
-        "responses": [
-          {
-            "responseCode": 200,
-            "contentSchema": {
-              "schemaType": "array",
-              "format": "",
-              "items": "#/components/schemas/Player"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          }
-        ],
-        "tags": [
-          "players"
-        ]
-      }
-    },
-    "/enrollments/{eid}": {
-      "DELETE": {
-        "operationID": "deleteEnrollment",
-        "requires": [
-          "response_code(GET /enrollments/{eid}) == 200"
-        ],
-        "ensures": [
-          "response_code(GET /enrollments/{eid}) == 404",
-          "request_body(this) != previous(response_body(GET /enrollments/{eid}))"
-        ],
-        "pathParams": [
-          {
-            "name": "eid",
             "in": "path",
             "required": true,
             "schema": {
               "min": -999,
               "max": 999,
-              "name": "eid",
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "queryParams": [],
-        "responses": [
-          {
-            "responseCode": 200,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/enrollment"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 404,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 500,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          }
-        ],
-        "tags": [
-          "enrollments"
-        ]
-      },
-      "GET": {
-        "operationID": "getEnrollment",
-        "requires": [
-          "T"
-        ],
-        "ensures": [
-          "T"
-        ],
-        "pathParams": [
-          {
-            "name": "eid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "min": -999,
-              "max": 999,
-              "name": "eid",
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "queryParams": [],
-        "responses": [
-          {
-            "responseCode": 200,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/enrollment"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 404,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 500,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          }
-        ],
-        "tags": [
-          "enrollments"
-        ]
-      }
-    },
-    "/players/{pid}": {
-      "DELETE": {
-        "operationID": "deletePlayer",
-        "requires": [
-          "response_code(GET /players/{pid}) == 200"
-        ],
-        "ensures": [
-          "response_code(GET /players/{pid}) == 404",
-          "request_body(this) != previous(response_body(GET /players/{pid}))"
-        ],
-        "pathParams": [
-          {
-            "name": "pid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "name": "pid",
-              "type": "string",
-              "pattern": ""
-            }
-          }
-        ],
-        "queryParams": [],
-        "responses": [
-          {
-            "responseCode": 200,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/player"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 404,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 500,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          }
-        ],
-        "tags": [
-          "players"
-        ]
-      },
-      "GET": {
-        "operationID": "getPlayer",
-        "requires": [
-          "T"
-        ],
-        "ensures": [
-          "T"
-        ],
-        "pathParams": [
-          {
-            "name": "pid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "name": "pid",
-              "type": "string",
-              "pattern": ""
-            }
-          }
-        ],
-        "queryParams": [],
-        "responses": [
-          {
-            "responseCode": 200,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/player"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 404,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 500,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          }
-        ],
-        "tags": [
-          "players"
-        ]
-      },
-      "PUT": {
-        "operationID": "updatePlayer",
-        "requires": [
-          "response_code(GET /players/{pid}) == 200"
-        ],
-        "ensures": [
-          "response_code(GET /players/{pid}) == 200",
-          "request_body(this) != previous(response_body(GET /players/{pid}))",
-          "response_body(this) == request_body(this)"
-        ],
-        "pathParams": [
-          {
-            "name": "pid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "name": "pid",
-              "type": "string",
-              "pattern": ""
-            }
-          }
-        ],
-        "queryParams": [],
-        "requestBody": {
-          "ref": "#/schemas/player"
-        },
-        "responses": [
-          {
-            "responseCode": 200,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/player"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 404,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 500,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          }
-        ],
-        "tags": [
-          "players"
-        ]
-      }
-    },
-    "/tournaments/{tid}/capacity": {
-      "GET": {
-        "operationID": "getTournamentCapacity",
-        "requires": [
-          "response_code(GET /tournaments/{tid}) == 200"
-        ],
-        "ensures": [
-          "response_code(GET /tournaments/{tid}) == 200"
-        ],
-        "pathParams": [
-          {
-            "name": "tid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "min": 0,
-              "max": 999,
               "name": "tid",
               "type": "integer",
               "format": "int64"
@@ -737,9 +847,7 @@
           {
             "responseCode": 200,
             "contentSchema": {
-              "schemaType": "integer",
-              "format": "int32",
-              "ref": ""
+              "schemaType": "boolean"
             },
             "contentTypes": [
               "application/json"
@@ -748,8 +856,7 @@
           {
             "responseCode": 404,
             "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
+              "schemaType": "boolean"
             },
             "contentTypes": [
               "application/json"
@@ -767,98 +874,10 @@
           }
         ],
         "tags": [
-          "tournaments"
+          "player"
         ]
       }
-    },
-    "/tournaments": {
-      "POST": {
-        "operationID": "postTournament",
-        "requires": [
-          "response_code(GET /tournaments/request_body(this){tid}) == 404"
-        ],
-        "ensures": [
-          "response_code(GET /tournaments/request_body(this){tid}) == 200"
-        ],
-        "pathParams": [],
-        "queryParams": [],
-        "requestBody": {
-          "ref": "#/schemas/tournament"
-        },
-        "responses": [
-          {
-            "responseCode": 201,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/tournament"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 403,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 409,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          },
-          {
-            "responseCode": 500,
-            "contentSchema": {
-              "format": "",
-              "ref": "#/schemas/errorobject"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          }
-        ],
-        "tags": [
-          "tournaments"
-        ]
-      },
-      "GET": {
-        "operationID": "getTournaments",
-        "requires": [
-          "T"
-        ],
-        "ensures": [
-          "T"
-        ],
-        "pathParams": [],
-        "queryParams": [],
-        "responses": [
-          {
-            "responseCode": 200,
-            "contentSchema": {
-              "schemaType": "array",
-              "format": "",
-              "items": "#/components/schemas/Tournament"
-            },
-            "contentTypes": [
-              "application/json"
-            ]
-          }
-        ],
-        "tags": [
-          "tournaments"
-        ]
-      }
-    },
+    }, 
     "/enrollments": {
       "POST": {
         "operationID": "postEnrollment",
@@ -871,6 +890,7 @@
           "response_code(GET /enrollments/request_body(this){eid}) == 200", 
           "response_code(GET /players/request_body(this){pid}) == 200",
           "response_code(GET /tournaments/request_body(this){tid}) == 200", 
+          "response_body(GET /tournaments/request_body(this){tid}/capacity) > response_body(GET /tournaments/request_body(this){tid}/players).length",
           "response_body(this) == request_body(this)"
         ],
         "pathParams": [],
@@ -931,7 +951,7 @@
           }
         ],
         "tags": [
-          "enrollments"
+          "enrollment"
         ]
       },
       "GET": {
@@ -958,27 +978,133 @@
           }
         ],
         "tags": [
-          "enrollments"
+          "enrollment"
+        ]
+      }
+    },
+    "/enrollments/{eid}": {
+      "DELETE": {
+        "operationID": "deleteEnrollment",
+        "requires": [
+          "response_code(GET /enrollments/{eid}) == 200"
+        ],
+        "ensures": [
+          "response_code(GET /enrollments/{eid}) == 404",
+          "request_body(this) != previous(response_body(GET /enrollments/{eid}))"
+        ],
+        "pathParams": [
+          {
+            "name": "eid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "min": -999,
+              "max": 999,
+              "name": "eid",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "queryParams": [],
+        "responses": [
+          {
+            "responseCode": 200,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/enrollment"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 404,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 500,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "enrollment"
+        ]
+      },
+      "GET": {
+        "operationID": "getEnrollment",
+        "requires": [
+          "T"
+        ],
+        "ensures": [
+          "T"
+        ],
+        "pathParams": [
+          {
+            "name": "eid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "min": -999,
+              "max": 999,
+              "name": "eid",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "queryParams": [],
+        "responses": [
+          {
+            "responseCode": 200,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/enrollment"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 404,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          },
+          {
+            "responseCode": 500,
+            "contentSchema": {
+              "format": "",
+              "ref": "#/schemas/errorobject"
+            },
+            "contentTypes": [
+              "application/json"
+            ]
+          }
+        ],
+        "tags": [
+          "enrollment"
         ]
       }
     }
   },
   "schemas": [
-    {
-      "name": "eid",
-      "type": "integer",
-      "properties": [
-        {
-          "format": "int64",
-          "min": -999,
-          "max": 999,
-          "name": "eid",
-          "type": "integer",
-          "required": true,
-          "gen": false
-        }
-      ]
-    },
     {
       "name": "errorobject",
       "type": "object",
@@ -1000,27 +1126,17 @@
       ]
     },
     {
-      "name": "pid",
-      "type": "string",
-      "properties": [
-        {
-          "pattern": "(1|2)[0-9]{8}",
-          "name": "pid",
-          "type": "string",
-          "required": true,
-          "gen": false
-        }
-      ]
-    },
-    {
       "name": "tournament",
       "type": "object",
       "properties": [
         {
-          "ref": "#/schemas/tid",
+          "format": "int64",
+          "min": 0,
+          "max": 999,
           "name": "tid",
+          "type": "integer",
           "required": true,
-          "gen": false
+          "gen": true
         },
         {
           "pattern": "",
@@ -1031,7 +1147,7 @@
         },
         {
           "format": "int32",
-          "min": 0,
+          "min": -999,
           "max": 999,
           "name": "capacity",
           "type": "integer",
@@ -1039,8 +1155,9 @@
           "gen": false
         },
         {
-          "itemsType": "#/schemas/pid",
+          "itemsType": "string",
           "itemsFormat": "",
+          "refersTo": "#/schemas/player",
           "name": "players",
           "type": "array",
           "required": false,
@@ -1049,27 +1166,13 @@
       ]
     },
     {
-      "name": "tid",
-      "type": "integer",
-      "properties": [
-        {
-          "format": "int64",
-          "min": 0,
-          "max": 999,
-          "name": "tid",
-          "type": "integer",
-          "required": true,
-          "gen": true
-        }
-      ]
-    },
-    {
       "name": "player",
       "type": "object",
       "properties": [
         {
-          "ref": "#/schemas/pid",
+          "pattern": "(1|2)[0-9]{8}",
           "name": "pid",
+          "type": "string",
           "required": true,
           "gen": false
         },
@@ -1088,8 +1191,9 @@
           "gen": false
         },
         {
-          "itemsType": "#/schemas/tid",
-          "itemsFormat": "",
+          "itemsType": "integer",
+          "itemsFormat": "int64",
+          "refersTo": "#/schemas/tournament",
           "name": "tournaments",
           "type": "array",
           "required": false,
@@ -1102,20 +1206,27 @@
       "type": "object",
       "properties": [
         {
-          "ref": "#/schemas/eid",
+          "format": "int32",
+          "min": -999,
+          "max": 999,
           "name": "eid",
+          "type": "integer",
           "required": true,
           "gen": false
         },
         {
-          "ref": "#/schemas/pid",
+          "pattern": "(1|2)[0-9]{8}",
           "name": "pid",
+          "type": "string",
           "required": true,
           "gen": false
         },
         {
-          "ref": "#/schemas/tid",
+          "format": "int64",
+          "min": 0,
+          "max": 999,
           "name": "tid",
+          "type": "integer",
           "required": true,
           "gen": false
         }

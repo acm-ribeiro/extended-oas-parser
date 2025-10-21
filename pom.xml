@@ -46,8 +46,8 @@
         <!-- contract parser -->
         <dependency>
             <groupId>com.github.acm-ribeiro</groupId>
-            <artifactId>magmact-parser</artifactId>
-            <version>024492f9c3</version>
+            <artifactId>glacier-parser</artifactId>
+            <version>fcfa79c295</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->

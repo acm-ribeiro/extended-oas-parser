@@ -1,12 +1,13 @@
 package extended_parser_domain;
 
-import magmact_domain.Formula;
-import magmact_parser.VisitorOrientedParser;
 
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import domain.Formula;
+import parser.VisitorOrientedParser;
 
 public class Operation {
 
