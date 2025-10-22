@@ -3,8 +3,8 @@ package extended_parser_domain;
 import java.util.*;
 import java.util.Map.Entry;
 
-import domain.Formula;
-import parser.VisitorOrientedParser;
+import glacier_domain.Formula;
+import glacier_parser.VisitorOrientedParser;
 
 public class Specification {
 

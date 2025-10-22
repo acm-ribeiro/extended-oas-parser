@@ -1,13 +1,10 @@
 package extended_parser_domain;
 
-
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import domain.Formula;
-import parser.VisitorOrientedParser;
+import glacier_domain.Formula;
+import glacier_parser.VisitorOrientedParser;
 
 public class Operation {
 
